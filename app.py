@@ -25,7 +25,13 @@ def create_game(data):
 
 @app.route('/create_game', methods=['POST'])
 def handle_create_game():
-    game_id = generate_game_id() # Replace this with your own function to generate a unique game ID
+    game_id = generate_game_id() 
+    socketio.emit('create_game', {'game_id': game_id})
+    return redirect('/game/' + game_id)
+
+@app.route('/add_player', methods=['POST'])
+def handle_create_game():
+    game_id = generate_game_id() 
     socketio.emit('create_game', {'game_id': game_id})
     return redirect('/game/' + game_id)
 

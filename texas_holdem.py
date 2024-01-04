@@ -1,12 +1,13 @@
 import random
 
 class Player:
-    def __init__(self, name, balance):
+    def __init__(self, name, id, balance):
         self.name = name
+        self.id = id
         self.balance = balance
         self.hand = []
         self.score = [0]
-
+        
 class TexasHoldem:
     def __init__(self):
         self.players = []
@@ -18,10 +19,8 @@ class TexasHoldem:
         self.minimum_raise = 0
         self.round = 0
         self.game_over = False
-
-    def add_player(self, name, balance):
-        player = Player(name, balance)
-        self.players.append(player)
+        self.game_id = None
+        self.creator_id = None
 
     def deal_cards(self):
         random.shuffle(self.deck)

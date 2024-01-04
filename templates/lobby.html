@@ -10,12 +10,20 @@
 <body>
     <h1>Welcome to the game!</h1>
     <p>Use this URL to invite other players to join: <a href="{{ join_url }}">{{ join_url }}</a></p>
+    
+    {% if creator_id == request.cookies.get('player_id') %}
+    <form action="{{ url_for('create_game', game_id=game_id) }}" method="get">
+        <button type="submit">Start Game</button>
+    </form>
+    {% endif %}
+    
     {% for player in players %}
     <div class="player">
         <h2>{{ player.name }}</h2>
-        <p>Starting balance: ${{ player.balance }}</p>
+        <p>Starting balance: ${{ player.starting_balance }}</p>
     </div>
     {% endfor %}
+    
 </body>
 
 </html>

@@ -8,9 +8,15 @@
 </head>
 
 <body>
-    <form action="/create_game" method="post">
-        <button type="submit">Create Game</button>
-    </form>
+    <body>
+        <form action="/create_game" method="post">
+            <label for="player_name">Player Name:</label>
+            <input type="text" id="player_name" name="player_name"><br><br>
+            <label for="starting_balance">Starting Balance:</label>
+            <input type="number" id="starting_balance" name="starting_balance" min="0" step="1"><br><br>
+            <button type="submit">Create Game</button>
+        </form>
+    </body>
 </body>
 
 </html>

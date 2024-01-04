@@ -8,12 +8,12 @@
 </head>
 
 <body>
-    <form action="/add_player" method="post">
-        <label for="player_name">Player Name:</label>
-        <input type="text" id="player_name" name="player_name">
-        <button type="submit">Join</button>
-    </form>
+    {% for player in players %}
+    <div class="player">
+        <h2>{{ player.name }}</h2>
+        <p>Starting balance: ${{ player.balance }}</p>
+    </div>
+    {% endfor %}
 </body>
-
 
 </html>

@@ -1,9 +1,9 @@
 import random
 
 class Player:
-    def __init__(self, name, value):
+    def __init__(self, name, balance):
         self.name = name
-        self.value = value
+        self.balance = balance
         self.hand = []
         self.score = [0]
 
@@ -19,8 +19,8 @@ class TexasHoldem:
         self.round = 0
         self.game_over = False
 
-    def add_player(self, name, value):
-        player = Player(self, name, value)
+    def add_player(self, name, balance):
+        player = Player(name, balance)
         self.players.append(player)
 
     def deal_cards(self):
@@ -109,4 +109,3 @@ class TexasHoldem:
     
     # def end_game(self):
     #     # End the game and declare a winner
-

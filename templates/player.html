@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="static/js/app.js"></script>
+</head>
+
+<body>
+    <form id="join-game-form" action="/add_player" method="post">
+        <label for="player_name">Player Name:</label>
+        <input type="text" id="player_name" name="player_name"><br><br>
+        <label for="starting_balance">Starting Balance:</label>
+        <input type="number" id="starting_balance" name="starting_balance" min="0" step="1"><br><br>
+        <button type="submit">Join Game</button>
+    </form>
+</body>
+
+
+</html>

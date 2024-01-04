@@ -18,7 +18,7 @@ def create_game():
     player_name = request.form['player_name']
     player_id = request.cookies.get('player_id')
     starting_balance = request.form['starting_balance']
-    player = Player(player_name, starting_balance, player_id)
+    player = Player(player_name, player_id, starting_balance)
     holdem.players.append(player)
     holdem.game_id = game_id
     holdem.creator_id = player_id

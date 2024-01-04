@@ -19,7 +19,6 @@ class TexasHoldem:
         self.minimum_raise = 0
         self.round = 0
         self.game_over = False
-        self.game_id = None
         self.creator_id = None
 
     def deal_cards(self):

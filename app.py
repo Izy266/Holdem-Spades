@@ -22,18 +22,22 @@ def create_game():
     holdem.players.append(player)
     holdem.game_id = game_id
     holdem.creator_id = player_id
-    return redirect(url_for('lobby', game_id=game_id))
+    response = redirect(url_for('lobby', game_id=game_id))
+    response.set_cookie('player_id', secrets.token_hex(16))
+    return response
 
 @app.route('/add_player', methods=['POST'])
 def add_player():
     player_name = request.form['player_name']
     starting_balance = request.form['starting_balance']
     player_id = request.cookies.get('player_id')
-    if player_id in [player.id for player in holdem.players]:
+    if player_id:
         return "You have already joined the game."
     player = Player(player_name, starting_balance, player_id)
     holdem.players.append(player)
-    return redirect(url_for('lobby', game_id=holdem.game_id))
+    response = redirect(url_for('lobby', game_id=holdem.game_id))
+    response.set_cookie('player_id', secrets.token_hex(16))
+    return response
 
 @app.route('/lobby/<game_id>')
 def lobby(game_id):

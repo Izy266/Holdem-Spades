@@ -16,14 +16,14 @@ def index():
 def create_game():
     game_id = str(uuid.uuid4())
     player_name = request.form['player_name']
-    player_id = request.cookies.get('player_id')
+    player_id = secrets.token_hex(16)
     starting_balance = request.form['starting_balance']
     player = Player(player_name, player_id, starting_balance)
     holdem.players.append(player)
     holdem.game_id = game_id
     holdem.creator_id = player_id
     response = redirect(url_for('lobby', game_id=game_id))
-    response.set_cookie('player_id', secrets.token_hex(16))
+    response.set_cookie('player_id', player_id)
     return response
 
 @app.route('/add_player', methods=['POST'])
@@ -36,7 +36,7 @@ def add_player():
     player = Player(player_name, starting_balance, player_id)
     holdem.players.append(player)
     response = redirect(url_for('lobby', game_id=holdem.game_id))
-    response.set_cookie('player_id', secrets.token_hex(16))
+    response.set_cookie('player_id', player_id)
     return response
 
 @app.route('/lobby/<game_id>')

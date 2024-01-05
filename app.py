@@ -3,7 +3,6 @@ from flask_socketio import SocketIO, emit
 import secrets, uuid, json
 from texas_holdem import *
 
-# web sockets
 # database
 
 app = Flask(__name__)
@@ -45,22 +44,24 @@ def add_player(game_id):
     response = redirect(url_for('lobby', game_id=game_id))
     response.set_cookie('player_id', player_id)
     players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
-    socketio.emit('update_player_list', players_json, broadcast=True)
+    socketio.emit('player_list', players_json, broadcast=True)
     return response
 
 @app.route('/lobby/<game_id>')
 def lobby(game_id):
     join_url = request.host_url + '/join/' + game_id
     game = games[game_id]
-    return render_template('lobby.html', join_url=join_url, creator_id=game.creator_id, players=game.players)
+    return render_template('lobby.html', join_url=join_url, game=game, game_id=game_id)
 
 @app.route('/join/<game_id>')
-def player(game_id):
+def join(game_id):
     return render_template('player.html', game_id=game_id)
 
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
+@app.route('/play/<game_id>')
+def play(game_id):
+    socketio.emit('game_created', broadcast=True)
+    game = games[game_id]
+    return render_template('game.html', game=game)
 
 if __name__ == '__main__':
     socketio.run(app)

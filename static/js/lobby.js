@@ -3,15 +3,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameId = window.location.pathname.split('/').pop();
     const socket = io();
 
-    socket.on('connect', () => {
-        socket.emit('join_game', gameId);
-    });
-    
-    socket.on('update_player_list', playersJson => {
+    socket.on('player_list', playersJson => {
         playerList.innerHTML = ''
         const players = JSON.parse(playersJson);
         players.forEach(player => {
             playerList.innerHTML += `<h2>${player.name}</h2><p>$${player.balance}</p>`;
         });
+    });
+
+    socket.on('game_created', () => {
+        window.location.href = '/play/' + gameId;
     });
 });

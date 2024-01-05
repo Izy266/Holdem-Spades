@@ -13,16 +13,16 @@
     <h1>Welcome to the game!</h1>
     <p>Use this URL to invite other players to join: <a href="{{ join_url }}">{{ join_url }}</a></p>
 
-    {% if creator_id == request.cookies.get('player_id') %}
-    <form action="{{ url_for('create_game', game_id=game_id) }}" method="get">
+    {% if game.creator_id == request.cookies.get('player_id') %}
+    <form action="/play/{{ game_id }}" method="get">
         <button type="submit">Start Game</button>
     </form>
     {% endif %}
-    
+
     <div class="player-list">
-        {% for player in players %}
-            <h2>{{ player.name }}</h2>
-            <p>${{ player.balance }}</p>
+        {% for player in game.players %}
+        <h2>{{ player.name }}</h2>
+        <p>${{ player.balance }}</p>
         {% endfor %}
     </div>
 

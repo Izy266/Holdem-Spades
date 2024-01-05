@@ -20,6 +20,7 @@ class TexasHoldem:
         self.round = 0
         self.game_over = False
         self.creator_id = None
+        self.hands = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush']
 
     def deal_cards(self):
         random.shuffle(self.deck)
@@ -29,17 +30,17 @@ class TexasHoldem:
                 player.hand.append(card)
 
     # def next_player(self):
-    #     # Move to the next player
+
 
     # def update_pot(self, amount):
-    #     # Update the pot with the given amount
+
 
     # def update_current_bet(self, amount):
-    #     # Update the current bet with the given amount
+
 
     # def update_minimum_raise(self, amount):
-    #     # Update the minimum raise with the given amount
-    
+
+
     def score(self, player):
         all_cards = player.hand + self.community_cards
         all_ranks = [card[0] for card in all_cards]
@@ -56,6 +57,9 @@ class TexasHoldem:
                 for i in range(len(suit_ranks_set) - 4):
                     if suit_ranks_set[i] - 4 == suit_ranks_set[i + 4]:
                         player.score = [8, suit_ranks_set[i]]
+                        return player.score
+                    if all(val in all_ranks_set for val in [14, 2, 3, 4, 5]):
+                        player.score = [8, 5]
                         return player.score
                 # Add highest card
                 player.score += sorted(suit_ranks, reverse=True)[:5] 
@@ -84,6 +88,9 @@ class TexasHoldem:
         for i in range(len(all_ranks_set) - 4):
             if all_ranks_set[i] - 4 == all_ranks_set[i + 4]:
                 player.score = [4, all_ranks_set[i]]
+                return player.score
+            if all(val in all_ranks_set for val in [14, 2, 3, 4, 5]):
+                player.score = [4, 5]
                 return player.score
                 
         if player.score[0] == 3:

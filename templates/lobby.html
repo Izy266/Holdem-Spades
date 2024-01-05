@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="../static/js/app.js"></script>
-    <script>
-        let players = JSON.parse('{{ players_json|safe }}');
-    </script>
+    <script src="../static/js/lobby.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.min.js"></script>
 </head>
 
 <body>
@@ -20,8 +18,12 @@
         <button type="submit">Start Game</button>
     </form>
     {% endif %}
-
+    
     <div class="player-list">
+        {% for player in players %}
+            <h2>{{ player.name }}</h2>
+            <p>${{ player.balance }}</p>
+        {% endfor %}
     </div>
 
 </body>

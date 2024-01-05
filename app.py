@@ -1,9 +1,14 @@
 from flask import Flask, request, render_template, redirect, request, url_for
+from flask_socketio import SocketIO, emit
 import secrets, uuid, json
 from texas_holdem import *
 
+# web sockets
+# database
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(32)
+socketio = SocketIO(app)
 games = {}
 
 @app.route('/')
@@ -12,16 +17,19 @@ def index():
 
 @app.route('/create_game', methods=['POST'])
 def create_game():
+    game = TexasHoldem()
     game_id = str(uuid.uuid4())
-    games[game_id] = TexasHoldem()
+    games[game_id] = game
     starting_balance = request.form['starting_balance']
     player_name = request.form['player_name']
     player_id = secrets.token_hex(16)
     player = Player(player_name, player_id, starting_balance)
-    games[game_id].players.append(player)
-    games[game_id].creator_id = player_id
+    game.players.append(player)
+    game.creator_id = player_id
     response = redirect(url_for('lobby', game_id=game_id))
     response.set_cookie('player_id', player_id)
+    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
+    socketio.emit('update_player_list', players_json, broadcast=True)
     return response
 
 @app.route('/add_player/<game_id>', methods=['POST'])
@@ -32,24 +40,27 @@ def add_player(game_id):
         return "You have already joined the game."
     player_id = secrets.token_hex(16)
     player = Player(player_name, player_id, starting_balance)
-    games[game_id].players.append(player)
+    game = games[game_id]
+    game.players.append(player)
     response = redirect(url_for('lobby', game_id=game_id))
     response.set_cookie('player_id', player_id)
+    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
+    socketio.emit('update_player_list', players_json, broadcast=True)
     return response
 
 @app.route('/lobby/<game_id>')
 def lobby(game_id):
     join_url = request.host_url + '/join/' + game_id
-    return render_template('lobby.html', join_url=join_url, creator_id=games[game_id].creator_id)
-
-@app.route('/players/<game_id>')
-def players(game_id):
-    # Get the player data for the specified game ID
-    players = [{'name': player.name, 'balance': player.balance} for player in games[game_id].players]
-
-    # Return the player data as JSON
-    return json.dumps(players)
+    game = games[game_id]
+    return render_template('lobby.html', join_url=join_url, creator_id=game.creator_id, players=game.players)
 
 @app.route('/join/<game_id>')
 def player(game_id):
     return render_template('player.html', game_id=game_id)
+
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+
+if __name__ == '__main__':
+    socketio.run(app)

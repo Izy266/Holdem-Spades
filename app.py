@@ -1,7 +1,7 @@
-from flask import Flask, request, render_template, redirect, request, url_for
-from flask_socketio import SocketIO, emit
+from flask import Flask, request, render_template, redirect, url_for
+from flask_socketio import SocketIO
 import secrets, uuid, json
-from texas_holdem import *
+from holdem import *
 
 # database
 

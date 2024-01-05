@@ -6,15 +6,24 @@ class Player:
         self.id = id
         self.balance = balance
         self.hand = []
-        self.score = [0]
+        self.bets = [0 for _ in range(4)]
+        self.score = []
         
 class TexasHoldem:
     def __init__(self):
         self.players = []
+        self.active_players = self.players
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
         self.community_cards = []
-        self.pot = 0
-        self.current_player = None
+        self.pot = []
+        self.button = 0 # Who starts the new hand
+        self.turn = 0
+        self.round = 0
+        self.bet_start = 3 if len(self.players) > 2 else 2
+        self.sb_turn = 1 if len(self.players) > 2 else 0
+        self.bb_turn = 2 if len(self.players) > 2 else 1
+        self.small_blind = 0
+        self.big_blind = 0
         self.current_bet = 0
         self.minimum_raise = 0
         self.round = 0
@@ -24,13 +33,57 @@ class TexasHoldem:
 
     def deal_cards(self):
         random.shuffle(self.deck)
-        for player in self.players:
-            for i in range(2):
+        for _ in range(2):
+            for player in self.players:
                 card = self.deck.pop()
                 player.hand.append(card)
+    
+    # Checks if round is over
+    def round_over(self):
+        if self.turn == self.bet_start - 1:
+            self.pot[self.round].append(len(self.active_players))
+            self.turn = (self.button + 1) % len(self.active_players)
+            self.bet_start = self.turn
+            self.current_bet = 0
+            self.round += 1
+            return True
+        return False
+    
+    # Checks if the hand is over
+    def hand_over(self):
+        if len(self.active_players) == 1 or self.round == 4:
+            self.allocate_pot()
+            self.active_players = self.players
+            self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
+            self.community_cards = []
+            self.pot = []
+            self.button += 1
+            return True
+        return False
+    
+    def allocate_pot(self):
+        hands = [p.score for p in self.active_players]
+        # handle ties
+        # handle money left over if player couldn't afford min bet
+        
 
-    # def next_player(self):
-
+    # Gets the active player
+    def active(self):
+        return self.active_players[self.turn % len(self.active_players)]
+    
+    # Used for betting and calling
+    def bet(self, amount = 0):
+        self.bet_start = self.turn if amount else self.bet_start
+        amount = self.current_bet if not amount else amount
+        player = self.active()
+        bet = min(player.balance, amount)
+        player.bet[self.round] += bet
+        self.pot[self.round] += bet
+        player.balance -= bet
+        self.turn += 1
+    
+    def fold(self):
+        self.active_players.pop(self.turn%len(self.active_players))
 
     # def update_pot(self, amount):
 

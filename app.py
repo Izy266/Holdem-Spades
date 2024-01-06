@@ -22,8 +22,7 @@ def create_game():
     starting_balance = request.form['starting_balance']
     player_name = request.form['player_name']
     player_id = secrets.token_hex(16)
-    player = Player(player_name, player_id, starting_balance)
-    game.players.append(player)
+    game.add_player(player_name, player_id, starting_balance)
     game.creator_id = player_id
     response = redirect(url_for('lobby', game_id=game_id))
     response.set_cookie('player_id', player_id)
@@ -33,14 +32,13 @@ def create_game():
 
 @app.route('/add_player/<game_id>', methods=['POST'])
 def add_player(game_id):
-    player_name = request.form['player_name']
-    starting_balance = request.form['starting_balance']
     if request.cookies.get('player_id'):
         return "You have already joined the game."
+    player_name = request.form['player_name']
+    starting_balance = request.form['starting_balance']
     player_id = secrets.token_hex(16)
-    player = Player(player_name, player_id, starting_balance)
     game = games[game_id]
-    game.players.append(player)
+    game.add_player(player_name, player_id, starting_balance)
     response = redirect(url_for('lobby', game_id=game_id))
     response.set_cookie('player_id', player_id)
     players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])

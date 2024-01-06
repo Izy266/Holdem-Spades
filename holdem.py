@@ -32,16 +32,15 @@ class TexasHoldem:
         self.creator_id = None
         self.hands = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush']
 
-    def deal_cards(self):
-        random.shuffle(self.deck)
-        for _ in range(2):
-            for player in self.players:
-                card = self.deck.pop()
-                player.hand.append(card)
+    def add_player(self, name, id, balance):
+        player = Player(name, id, balance)
+        self.players.append(player)
 
     def place_card(self):
         self.community_cards.append(self.deck.pop())
-        
+        for player in self.players_live:
+            self.score(player)
+
     # Checks if round is over
     def if_round_over(self):
         if not all(player.moved for player in self.players_live):
@@ -82,8 +81,14 @@ class TexasHoldem:
 
     def new_hand(self):
         self.players_live = []
+        self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
+        random.shuffle(self.deck)
+        self.community_cards = [self.deck.pop() for _ in range(3)]
+        self.pot = 0
+        self.round = 0
+
         for player in self.players:
-            player.hand = []
+            player.hand = [self.deck.pop(), self.deck.pop()]
             player.bets = [0 for _ in range(4)]
             player.stake = 0
             player.score = [-1]
@@ -91,11 +96,6 @@ class TexasHoldem:
             player.live = True
             if player.balance:
                 self.players_live.append(player)
-
-        self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
-        self.community_cards = []
-        self.pot = 0
-        self.round = 0
 
     def distribute_pot(self):
         max_win = defaultdict(int)
@@ -146,6 +146,7 @@ class TexasHoldem:
         player.live = False
         self.players_live.remove(player)
 
+    # Sets and returns player score
     def score(self, player):
         all_cards = player.hand + self.community_cards
         all_ranks = [card[0] for card in all_cards]
@@ -217,3 +218,5 @@ class TexasHoldem:
         player.score = [0] + sorted(all_ranks, reverse=True)[:5]
         return player.score
     
+
+game = TexasHoldem()

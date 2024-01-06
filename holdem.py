@@ -1,4 +1,5 @@
 import random
+from collections import defaultdict
 
 class Player:
     def __init__(self, name, id, balance):
@@ -6,20 +7,20 @@ class Player:
         self.id = id
         self.balance = balance
         self.hand = []
-        self.bets = [0 for _ in range(4)]
+        self.bet = 0
         self.score = []
+        self.moved = False
+        self.live = True
         
 class TexasHoldem:
     def __init__(self):
         self.players = []
-        self.active_players = self.players
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
         self.community_cards = []
-        self.pot = []
+        self.pot = 0
         self.button = 0 # Who starts the new hand
-        self.turn = 0
         self.round = 0
-        self.bet_start = 3 if len(self.players) > 2 else 2
+        self.turn = 3 if len(self.players) > 2 else 2
         self.sb_turn = 1 if len(self.players) > 2 else 0
         self.bb_turn = 2 if len(self.players) > 2 else 1
         self.small_blind = 0
@@ -40,8 +41,15 @@ class TexasHoldem:
     
     # Checks if round is over
     def round_over(self):
-        if self.turn == self.bet_start - 1:
-            self.pot[self.round].append(len(self.active_players))
+        # consider players who folded...
+        if all((player.moved or not player.live) for player in self.players):
+            round_bets = [p.bets[self.round] for p in self.active_players]
+            max_bet = max(round_bets)
+            if round_bets.count(max_bet) == 1:
+                bet_ceil = max([bet for bet in round_bets if bet != max_bet])
+                max_better = self.active_players[round_bets.index(max_bet)]
+                max_better.bets[self.round] = bet_ceil
+                max_better.balance += (max_bet - bet_ceil)
             self.turn = (self.button + 1) % len(self.active_players)
             self.bet_start = self.turn
             self.current_bet = 0
@@ -51,39 +59,63 @@ class TexasHoldem:
     
     # Checks if the hand is over
     def hand_over(self):
-        if len(self.active_players) == 1 or self.round == 4:
+        if len([player for player in self.players if player.live]) == 1 or self.round == 4:
             self.allocate_pot()
-            self.active_players = self.players
+            for player in self.players:
+                player.live = True
             self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
             self.community_cards = []
-            self.pot = []
+            self.pot = 0
             self.button += 1
+            self.bet_start = self.turn = self.button + 3 if len(self.players) > 2 else 2
+            self.sb_turn = self.button + 1 if len(self.players) > 2 else 0
+            self.bb_turn = self.button + 2 if len(self.players) > 2 else 1
             return True
         return False
     
     def allocate_pot(self):
-        hands = [p.score for p in self.active_players]
-        # handle ties
-        # handle money left over if player couldn't afford min bet
-        
+        max_win = defaultdict(int)
+        in_pot = self.pot
+        while in_pot:
+            bets = [p.bet for p in self.players if p.bet]
+            min_bet = min(bets)
+            for p in self.players:
+                if p.bet:
+                    max_win[p.id] += min_bet * len(bets) if p.live else 0
+                    p.bet -= min_bet
+                    in_pot -= min_bet
+
+        while self.pot:
+            max_score = max([p.score for p in self.players if p.live])
+            winners = [p for p in self.players if p.live and p.score == max_score]
+            top_player = winners[0]
+            win = min(max_win[top_player.id], self.pot//len(winners))
+            top_player.balance += win
+            top_player.score = [-1]
+            self.pot -= win
 
     # Gets the active player
-    def active(self):
-        return self.active_players[self.turn % len(self.active_players)]
-    
+    def cur_player(self):
+        return self.players[self.turn % len(self.players)]
+
     # Used for betting and calling
     def bet(self, amount = 0):
-        self.bet_start = self.turn if amount else self.bet_start
-        amount = self.current_bet if not amount else amount
-        player = self.active()
-        bet = min(player.balance, amount)
-        player.bet[self.round] += bet
-        self.pot[self.round] += bet
-        player.balance -= bet
+        player = self.cur_player()
+        if player.live and player.balance != 0:
+            if amount:
+                for player in self.players:
+                    player.moved = False
+            player.moved = True
+            amount = self.current_bet - player.bets[self.round] if not amount else amount
+            bet = min(player.balance, amount)
+            player.bet += bet
+            self.pot += bet
+            player.balance -= bet
         self.turn += 1
     
     def fold(self):
-        self.active_players.pop(self.turn%len(self.active_players))
+        player = self.cur_player()
+        player.live = False
 
     # def update_pot(self, amount):
 

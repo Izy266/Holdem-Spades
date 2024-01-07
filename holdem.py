@@ -22,8 +22,6 @@ class TexasHoldem:
         self.button = 0 # to track sb_turn, bb_turn, and turn at new hand
         self.round = 0
         self.turn = 3 if len(self.players) > 2 else 2
-        self.sb_turn = 1 if len(self.players) > 2 else 0
-        self.bb_turn = 2 if len(self.players) > 2 else 1
         self.small_blind = 0
         self.big_blind = 0
         self.current_bet = 0
@@ -35,16 +33,16 @@ class TexasHoldem:
         player = Player(name, id, balance)
         self.players.append(player)
 
+    def get_live_ind(self, ind):
+        ind %= len(self.players)
+        while not self.players[ind].live:
+            ind += 1
+        return ind
+
     # Returns active player
     def cur_player(self):
-        players_len = len(self.players)
-        ind = self.turn % players_len
-        player = self.players[ind]
-        while not player.live:
-            ind += 1
-            player = self.players[ind % players_len]
-        self.turn = ind
-        return player
+        self.turn = self.get_live_ind(self.turn)
+        return self.players[self.turn]
 
     def place_cards(self):
         if self.round == 1:
@@ -91,19 +89,10 @@ class TexasHoldem:
         
         self.distribute_pot()
         self.new_hand()
-        self.button += 1
-        self.turn = self.button + 3 if len(self.players) > 2 else 2
-        self.sb_turn = self.button + 1 if len(self.players) > 2 else 0
-        self.bb_turn = self.button + 2 if len(self.players) > 2 else 1
+
         return True
 
     def new_hand(self):
-        self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
-        random.shuffle(self.deck)
-        self.community_cards = []
-        self.pot = 0
-        self.round = 0
-
         for player in self.players:
             player.hand = [self.deck.pop(), self.deck.pop()]
             player.bets = [0 for _ in range(4)]
@@ -111,6 +100,16 @@ class TexasHoldem:
             player.score = self.score(player)
             player.moved = False
             player.live = bool(player.balance)
+
+        self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
+        random.shuffle(self.deck)
+        self.community_cards = []
+        self.pot = 0
+        self.round = 0
+        self.button = self.get_live_ind(self.button + 1)
+        self.turn = self.get_live_ind(self.button + 1 if len(self.players) > 2 else self.button)
+        self.bet(self.small_blind, blind = True)
+        self.bet(self.big_blind, blind = True)
 
     def distribute_pot(self):
         max_win = defaultdict(int)
@@ -137,7 +136,7 @@ class TexasHoldem:
             self.pot -= profit
 
     # Handle betting and calling
-    def bet(self, amount = 0):
+    def bet(self, amount = 0, blind = False):
         player = self.cur_player()
         if player.live and player.balance != 0:
             if amount:
@@ -147,7 +146,7 @@ class TexasHoldem:
             else:
                 amount = self.current_bet - player.bets[self.round]
 
-            player.moved = True
+            player.moved = not blind
             bet = min(player.balance, amount)
             player.stake += bet
             player.bets[self.round] += bet
@@ -237,31 +236,3 @@ class TexasHoldem:
         return player.score
     
 
-game = TexasHoldem()
-game.add_player("Andy", 0, 10000)
-game.add_player("Bob", 1, 10000)
-game.add_player("Cindy", 2, 10000)
-game.add_player("David", 3, 10000)
-
-game.new_hand()
-
-while True:
-    print(game.community_cards)        
-    print(f"{game.cur_player().name}: {game.cur_player().hand} | Score: {game.cur_player().score} | Balance: {game.cur_player().balance}")
-    print(f"Pot: {game.pot}")
-    print(f"Current Bet: {game.current_bet}")
-    print(f"Turn: {game.turn}")
-
-    user_input = input(f"{game.cur_player().name} ... Check, Bet, or Fold? ").strip().lower()
-    if user_input == 'check':
-        game.bet()
-    elif user_input == 'bet':
-        user_input = input("How much would you like to bet? ").strip()
-        game.bet(int(user_input))
-    elif user_input == 'fold':
-        game.fold()
-    
-    print()
-    if game.if_hand_over():
-        for player in game.players:
-            print(f"  {player.name}: {player.balance}  |", end='')

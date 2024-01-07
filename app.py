@@ -21,6 +21,8 @@ def create_game():
     games[game_id] = game
     starting_balance = request.form['starting_balance']
     player_name = request.form['player_name']
+    game.small_blind = request.form['small_blind']
+    game.big_blind = request.form['big_blind']
     player_id = secrets.token_hex(16)
     game.add_player(player_name, player_id, starting_balance)
     game.creator_id = player_id

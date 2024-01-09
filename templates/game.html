@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="../static/js/game.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.min.js"></script>
 </head>
 
 <body>
@@ -15,10 +16,7 @@
         <p>${{ player.balance }}</p>
         {% endfor %}
     </div>
-    <div class="buttons">
-        <button type="button" onclick="{{ game.check() }}">Check</button>
-        <button type="button" onclick="{{ game.bet() }}">Bet</button>
-        <button type="button" onclick="{{ game.fold() }}">Fold</button>
+    <div class="cbfButtons" id="cbf">
     </div>
 </body>
 

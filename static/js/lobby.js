@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameId = window.location.pathname.split('/').pop();
     const socket = io();
 
+    socket.emit('getPlayers', {gameId: gameId})
+
     socket.on('player_list', playersJson => {
         playerList.innerHTML = ''
         const players = JSON.parse(playersJson);

@@ -32,6 +32,12 @@ class TexasHoldem:
     def add_player(self, name, id, balance):
         player = Player(name, id, balance)
         self.players.append(player)
+    
+    def get_player(self, name = None, id = None):
+        in_game = [p.id for p in self.players] if id else [p.name for p in self.players]
+        lookup = id if id else name
+        return self.players[in_game.index(lookup)]
+
 
     def get_live_ind(self, ind):
         ind %= len(self.players)
@@ -68,7 +74,7 @@ class TexasHoldem:
                 max_bet, max_better = bet, player
 
         if bets.count(max_bet) == 1:
-            bet_ceil = max([bet for bet in bets if bet != max_bet])
+            bet_ceil = max([bet for bet in bets if bet != max_bet]) if len(bets) > 1 else 0
             diff = max_bet - bet_ceil
             max_better.bets[self.round] = bet_ceil
             max_better.balance += diff
@@ -239,8 +245,8 @@ class TexasHoldem:
 # game = TexasHoldem()
 # game.add_player("Andy", 0, 10000)
 # game.add_player("Bob", 1, 10000)
-# game.add_player("Cindy", 2, 10000)
-# game.add_player("David", 3, 10000)
+# # game.add_player("Cindy", 2, 10000)
+# # game.add_player("David", 3, 10000)
 # game.small_blind = 50
 # game.big_blind = 100
 

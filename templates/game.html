@@ -10,13 +10,11 @@
 </head>
 
 <body>
-    <div class="player-list">
-        {% for player in game.players %}
-        <h2>{{ player.name }}</h2>
-        <p>${{ player.balance }}</p>
-        {% endfor %}
-    </div>
-    <div class="cbfButtons" id="cbf">
+    <div id="playerList"></div>
+    <div class="cbfButtons" id="cbf"></div>
+    <div id="gameInfo">
+        <div id="cards"></div>
+        <div id="pot"></div>
     </div>
 </body>
 

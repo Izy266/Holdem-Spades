@@ -3,7 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameId = window.location.pathname.split('/').pop();
     const socket = io();
 
-    socket.emit('playerAction', { gameId: gameId, action: 'lobby' })
+    socket.on('connect', () => {
+        socket.emit('join', { gameId: gameId, playerId: 0 });
+        socket.emit('getPlayers', { gameId: gameId });
+    });
 
     socket.on('player_list', playersJson => {
         playerList.innerHTML = ''

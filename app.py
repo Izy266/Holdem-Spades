@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room
 import secrets, uuid, json
 from holdem import *
 
@@ -26,10 +26,12 @@ def join(game_id):
 
 @app.route('/play/<game_id>')
 def play(game_id):
-    socketio.emit('game_created', broadcast=True)
+    socketio.emit('game_created', room=game_id)
     game=games[game_id]
-    game.new_hand()
-    return render_template('game.html', game=game)
+    if not game.live:
+        game.new_hand()
+        game.live = True
+    return render_template('game.html')
 
 @app.route('/create_game', methods=['POST'])
 def create_game():
@@ -60,32 +62,49 @@ def add_player(game_id):
     response.set_cookie('player_id', player_id)
     return response
 
-@socketio.on('getPlayer')
+@socketio.on('join')
+def on_join(data):
+    game_id = data['gameId']
+    player_id = data['playerId']
+    join_room(game_id)
+    join_room(player_id)
+    
+@socketio.on('getPlayers')
 def get_player(data):
+    game_id = data['gameId']
+    game = games[game_id]
+    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
+    socketio.emit('player_list', players_json, room=game_id)
+
+@socketio.on('getPlayerHand')
+def get_player_hand(data):
     game_id = data['gameId']
     player_id = data['playerId']
     game = games[game_id]
-    player = game.get_player(id=player_id)
-    socketio.emit('player_info', {'in_pot': player.bets[game.round], 'cards': player.hand, 'balance': player.balance})
+    player = next(p for p in game.players if p.id == player_id)
+    socketio.emit('player_hand', {'cards': player.hand, 'score': player.score}, room=player_id)
 
 @socketio.on('playerAction')
 def handle_player_action(data):
     action = data['action']
     game_id = data['gameId']
+    player_id = data['playerId']
     game = games[game_id]
+    cur_player = game.cur_player()
     
-    if action == 'check':
-        game.bet()
-    elif action == 'bet':
-        amount = data.get('amount')
-        game.bet(int(amount))
-    elif action == 'fold':
-        game.fold()
+    if player_id == cur_player.id:
+        if action == 'check':
+            game.bet()
+        elif action == 'bet':
+            amount = data.get('amount')
+            game.bet(int(amount))
+        elif action == 'fold':
+            game.fold()
 
     players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
-    socketio.emit('player_list', players_json)
-    if action != 'lobby':
-        socketio.emit('game_info', {'cur_player_id': game.cur_player().id, 'cur_bet': game.current_bet, 'pot': game.pot, 'cards': game.community_cards})
+    
+    socketio.emit('player_list', players_json, room=game_id)
+    socketio.emit('game_info', {'cur_player_id': game.cur_player().id, 'cur_bet': game.current_bet, 'pot': game.pot, 'cards': game.community_cards}, room=game_id)
 
 if __name__ == '__main__':
     socketio.run(app)

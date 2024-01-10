@@ -15,6 +15,7 @@ class Player:
         
 class TexasHoldem:
     def __init__(self):
+        self.live = False
         self.players = []
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
         self.community_cards = []
@@ -38,14 +39,12 @@ class TexasHoldem:
         lookup = id if id else name
         return self.players[in_game.index(lookup)]
 
-
     def get_live_ind(self, ind):
         ind %= len(self.players)
         while not self.players[ind].live:
             ind += 1
         return ind
 
-    # Returns active player
     def cur_player(self):
         self.turn = self.get_live_ind(self.turn)
         return self.players[self.turn]
@@ -53,52 +52,52 @@ class TexasHoldem:
     def place_cards(self):
         if self.round == 1:
             self.community_cards = [self.deck.pop() for _ in range(3)]
-        else:
+        elif len(self.community_cards) < 5:
             self.community_cards.append(self.deck.pop())
+
+    def round_over(self):
+        players_live = [player for player in self.players if player.live]
+        return all(player.moved for player in players_live)
+
+    def hand_over(self):
+        players_live = [player for player in self.players if player.live]
+        return len(players_live) == 1 or self.round > 3
+
+    def update_scores(self):
         for player in self.players:
             if player.live:
                 self.score(player)
 
-    # Checks if round is over
-    def if_round_over(self):
-        players_live = [player for player in self.players if player.live]
-        if not all(player.moved for player in players_live):
-            return False
-        
-        max_bet, max_better, bets = 0, None, []
-        for player in players_live:
-            player.moved = False
-            bet = player.bets[self.round]
-            bets.append(bet)
-            if bet > max_bet:
-                max_bet, max_better = bet, player
+    def handle_round_over(self):
+        if self.round_over():
+            max_bet, max_better, bets = 0, None, []
+            for player in self.players:
+                player.moved = False
+                bet = player.bets[self.round]
+                bets.append(bet)
+                if bet > max_bet:
+                    max_bet, max_better = bet, player
 
-        if bets.count(max_bet) == 1:
-            bet_ceil = max([bet for bet in bets if bet != max_bet]) if len(bets) > 1 else 0
-            diff = max_bet - bet_ceil
-            max_better.bets[self.round] = bet_ceil
-            max_better.balance += diff
-            max_better.stake -= diff
-            self.pot -= diff
-        
-        self.turn = (self.button + 1) % len(self.players)
-        self.current_bet = 0
-        self.round += 1
-        self.place_cards()
-        return True
-    
-    # Checks if the hand is over
-    def if_hand_over(self):
-        players_live = [player for player in self.players if player.live]
-        if len(players_live) > 1 and self.round < 4:
-            return False
-        
-        self.distribute_pot()
-        self.new_hand()
+            if bets.count(max_bet) == 1:
+                bet_ceil = max([bet for bet in bets if bet != max_bet]) if len(bets) > 1 else 0
+                diff = max_bet - bet_ceil
+                max_better.bets[self.round] = bet_ceil
+                max_better.balance += diff
+                max_better.stake -= diff
+                self.pot -= diff
+            
+            self.turn = (self.button + 1) % len(self.players)
+            self.current_bet = 0
+            self.round += 1
+            self.place_cards()
+            self.update_scores()
 
-        return True
+        if self.hand_over():
+            self.distribute_pot()
 
     def new_hand(self):
+        self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
+        random.shuffle(self.deck)
         for player in self.players:
             player.hand = [self.deck.pop(), self.deck.pop()]
             player.bets = [0 for _ in range(4)]
@@ -107,8 +106,6 @@ class TexasHoldem:
             player.moved = False
             player.live = bool(player.balance)
 
-        self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
-        random.shuffle(self.deck)
         self.community_cards = []
         self.pot = 0
         self.round = 0
@@ -145,7 +142,7 @@ class TexasHoldem:
     def bet(self, amount = 0, blind = False):
         amount = int(amount)
         player = self.cur_player()
-        if player.live and player.balance != 0:
+        if player.balance != 0:
             if amount:
                 self.current_bet = amount
                 for p in self.players:
@@ -161,14 +158,13 @@ class TexasHoldem:
             player.balance -= bet
             
         self.turn += 1
-        self.if_round_over()
-        self.if_hand_over()
+        self.handle_round_over()
+            
     
     def fold(self):
         player = self.cur_player()
         player.live = False
-        self.if_round_over()
-        self.if_hand_over()
+        self.handle_round_over()
         
     # Sets and returns player score
     def score(self, player):

@@ -21,8 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const balance = document.getElementById("playerList");
     const suits = ['clubs', 'diamonds', 'hearts', 'spades'];
 
-    socket.emit('getGameInfo', { gameId: gameId });
-    socket.emit('getPlayers', { gameId: gameId });
+    socket.emit('playerAction', { gameId: gameId , action: 'ready'});
 
     socket.on('player_list', function (data) {
         const players = JSON.parse(data);

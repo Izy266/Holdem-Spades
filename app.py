@@ -60,13 +60,6 @@ def add_player(game_id):
     response.set_cookie('player_id', player_id)
     return response
 
-@socketio.on('getPlayers')
-def get_players(data):
-    game_id = data['gameId']
-    game = games[game_id]
-    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
-    socketio.emit('player_list', players_json)
-
 @socketio.on('getPlayer')
 def get_player(data):
     game_id = data['gameId']
@@ -75,19 +68,11 @@ def get_player(data):
     player = game.get_player(id=player_id)
     socketio.emit('player_info', {'in_pot': player.bets[game.round], 'cards': player.hand, 'balance': player.balance})
 
-@socketio.on('getGameInfo')
-def get_cur_player(data):
-    game_id = data['gameId']
-    game = games[game_id]
-    cur_player = game.cur_player()
-    socketio.emit('game_info', {'cur_player_id': cur_player.id, 'cur_bet': game.current_bet, 'pot': game.pot, 'cards': game.community_cards})
-
 @socketio.on('playerAction')
 def handle_player_action(data):
     action = data['action']
     game_id = data['gameId']
     game = games[game_id]
-    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
     
     if action == 'check':
         game.bet()
@@ -97,6 +82,7 @@ def handle_player_action(data):
     elif action == 'fold':
         game.fold()
 
+    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
     socketio.emit('player_list', players_json)
     if action != 'lobby':
         socketio.emit('game_info', {'cur_player_id': game.cur_player().id, 'cur_bet': game.current_bet, 'pot': game.pot, 'cards': game.community_cards})

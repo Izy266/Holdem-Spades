@@ -87,7 +87,6 @@ def handle_player_action(data):
     action = data['action']
     game_id = data['gameId']
     game = games[game_id]
-    cur_player = game.cur_player()
     players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
     
     if action == 'check':
@@ -99,9 +98,8 @@ def handle_player_action(data):
         game.fold()
 
     socketio.emit('player_list', players_json)
-
     if action != 'lobby':
-        socketio.emit('game_info', {'cur_player_id': cur_player.id, 'cur_bet': game.current_bet, 'pot': game.pot, 'cards': game.community_cards})
+        socketio.emit('game_info', {'cur_player_id': game.cur_player().id, 'cur_bet': game.current_bet, 'pot': game.pot, 'cards': game.community_cards})
 
 if __name__ == '__main__':
     socketio.run(app)

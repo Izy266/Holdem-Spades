@@ -102,7 +102,8 @@ def handle_player_action(data):
             game.fold()
 
     players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance} for p in game.players])
-    
+    max_score = max([p.score for p in game.players if p.live])
+    winners = [p for p in game.players if p.live and p.score == max_score]
     socketio.emit('player_list', players_json, room=game_id)
     socketio.emit('game_info', {'cur_player_id': game.cur_player().id, 'cur_bet': game.current_bet, 'pot': game.pot, 'cards': game.community_cards}, room=game_id)
 

@@ -1,0 +1,195 @@
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: "Inter Tight";
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(244, 244, 244);
+}
+
+h1 {
+    margin: 0 15px;
+    font-size: 60px;
+    letter-spacing: -1px;
+    line-height: 1;
+    text-align: center;
+}
+
+p {
+    margin: 0 15px;
+    font-size: 21px;
+    color: gray;
+    text-align: center;
+    max-width: 750px;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button h2 {
+    margin: 0;
+    font-size: 24px;
+    text-align: start;
+}
+
+button p {
+    margin: 0;
+    text-align: start;
+    font-size: 16px;
+}
+
+.header {
+    display: flex;
+    height: 45px;
+    background-color: rgb(29, 41, 55);
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.logo {
+    display: flex;
+    height: 100%;
+    width: 200px;
+    align-items: center;
+    margin: 15px;
+}
+
+.title {
+    font-family: "Style Script";
+    font-size: 26px;
+    margin-top: 3px;
+    color: white;
+    white-space: nowrap;
+}
+
+.menu {
+    display: flex;
+    height: 100%;
+    width: 400px;
+    margin: 15px;
+    justify-content: end;
+    align-items: center;
+}
+
+.menu_items {
+    font-weight: 300;
+    font-size: 17px;
+    letter-spacing: -1px;
+    word-spacing: +1px;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.menu_button {
+    display: none;
+    height: 100%;
+    width: 45px;
+
+    background-image: url("../img/menu.png");
+    background-color: transparent;
+    background-size: 32px 32px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    cursor: pointer;
+}
+
+.menu_button:hover {
+    background-color: rgb(58, 82, 110);
+}
+
+#logo_img {
+    max-height: 45%;
+    margin-right: 20px;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.main .intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.game_options {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin: 50px 15px;
+}
+
+.game_options button {
+    width: 200px;
+    height: 200px;
+    background-color: white;
+    border: 1px solid rgb(0, 0, 0, 0.1);
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    font-family: "Inter Tight";
+    padding: 20px;
+}
+
+.game_options button:hover {
+    background-color: rgb(0, 0, 0, 0.1);
+}
+
+.game_options button:active {
+    box-shadow: rgba(0, 0, 0, 0.2) 1.25px 0.95px 2px;
+    transform: translate(-0.75px, -1.05px);
+}
+
+.game_options button .button_content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.button_title {
+    margin-bottom: 50px;
+}
+
+#custom_button {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 36px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    .menu {
+        margin: 0;
+    }
+
+    .menu_items {
+        display: none;
+    }
+
+    .menu_button {
+        display: block;
+    }
+}

@@ -4,24 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <script src="../static/js/index.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;1,400;1,700&family=Style+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <title>Holdem Haven</title>
 </head>
 
 <body>
+    <div class="header">
+        <div class="logo">
+            <img src="../static/img/logo.svg" alt="Holdem Haven Logo" id="logo_img">
+            <div class="title">Holdem Spades</div>
+        </div>
+        <div class="menu">
+            <div class="menu_items">
+                <a href="#">Home</a>
+                <a href="#">Create Game</a>
+                <a href="#">How to Play</a>
+                <a href="#">Tournaments</a>
+            </div>
+            <button class="menu_button"></button>
+        </div>
+    </div>
 
-    <body>
-        <form action="/create_game" method="post">
-            <label for="player_name">Player Name:</label>
-            <input type="text" id="player_name" name="player_name"><br><br>
-            <label for="starting_balance">Starting Balance:</label>
-            <input type="number" id="starting_balance" name="starting_balance" min="0" step="1"><br><br>
-            <label for="small_blind">Small Blind:</label>
-            <input type="number" id="small_blind" name="small_blind" min="0" step="1"><br><br>
-            <label for="big_blind">Big Blind:</label>
-            <input type="number" id="big_blind" name="big_blind" min="0" step="1"><br><br>
-            <button type="submit">Create Game</button>
-        </form>
-    </body>
+    <div class="main">
+        <div class="intro">
+            <h1>Welcome to the Holdem Spades!</h1>
+            <p>Join players online and experience the thrill of Texas Hold'em from the comfort of your home. Choose your game mode, invite friends and start playing.</p>
+        </div>
+        <div class="game_options">
+        </div>
+    </div>
+    <!-- <form action="/create_game" method="post">
+        <label for="player_name">Player Name:</label>
+        <input type="text" id="player_name" name="player_name"><br><br>
+        <label for="starting_balance">Starting Balance:</label>
+        <input type="number" id="starting_balance" name="starting_balance" min="0" step="1"><br><br>
+        <label for="small_blind">Small Blind:</label>
+        <input type="number" id="small_blind" name="small_blind" min="0" step="1"><br><br>
+        <label for="big_blind">Big Blind:</label>
+        <input type="number" id="big_blind" name="big_blind" min="0" step="1"><br><br>
+        <button type="submit">Create Game</button>
+    </form> -->
+
 </body>
 
 </html>

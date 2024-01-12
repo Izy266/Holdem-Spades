@@ -53,7 +53,7 @@ button p {
 
 .header {
     display: flex;
-    height: 70px;
+    height: 50px;
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     align-items: center;
@@ -62,7 +62,7 @@ button p {
 
 
 .header a {
-    display:flex;
+    display: flex;
     height: 100%;
     width: 100%;
     align-items: center;
@@ -97,7 +97,6 @@ button p {
     display: flex;
     font-weight: 300;
     font-size: 16px;
-    letter-spacing: -1px;
     word-spacing: +1px;
     justify-content: space-between;
     text-wrap: nowrap;
@@ -118,8 +117,28 @@ button p {
     cursor: pointer;
 }
 
+
 .menu_button:hover {
     background-color: rgb(0, 0, 0, 0.1);
+}
+
+.common_button {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 20px 0;
+    width: 100%;
+    padding: 0.6rem;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.blue_button {
+    background-color: rgb(68, 74, 277);
+}
+
+.blue_button:hover {
+    background-color: rgb(57, 60, 201);
 }
 
 .create_lobby {
@@ -206,7 +225,7 @@ button p {
     font-size: 14px;
     border-radius: 5px;
     border: none;
-    padding: 0.6rem; 
+    padding: 0.6rem;
     margin: 4px 0;
     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
 }
@@ -230,26 +249,166 @@ button p {
     margin-left: 1px;
 }
 
-#create_lobby_button {
-    font-size: 15px;
-    font-weight: 500;
-    margin: 20px 0;
-    width: 100%;
-    padding: 0.6rem;
-    color: white;
-    background-color: rgb(68, 74, 277);
-    border: none;
-    border-radius: 5px;
+#start_game_button {
+    background-color: rgb(0, 197, 96);
 }
 
-#create_lobby_button:hover {
-    background-color: rgb(57, 60, 201);
+#start_game_button:hover {
+    background-color: rgb(0, 167, 81);
 }
 
 .detail_field {
     display: flex;
     flex-direction: column;
     width: 25rem;
+}
+
+.game .main {
+    justify-content: space-between;
+    margin: 50px 0;
+}
+
+#player_list {
+    display: flex;
+    gap: 3vw;
+}
+
+.player_info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.player_name {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.value_container {
+    font-family: "Inter";
+    font-size: 15px;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    /* background-color: rgb(0, 0, 0, 0.1); */
+    background-color: rgb(0, 100, 0, 0.2);
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    font-weight: 500;
+}
+
+.player_hand {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.card {
+    height: 144px;
+    width: 96px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+.card_front {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: start;
+    background-color: white;
+}
+
+.card_front div {
+    display: flex;
+    width: 100%;
+    justify-content: end;
+}
+
+.card_front p {
+    font-family: "Oswald";
+    font-size: 43px;
+    color: black;
+}
+
+.card_red p {
+    color: red;
+}
+
+.card_front div p {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 69px;
+}
+
+.card_back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e5e5f7;
+    opacity: 0.8;
+    /* background-image:  linear-gradient(30deg, #444cf7 12%, transparent 12.5%, transparent 87%, #444cf7 87.5%, #444cf7), linear-gradient(150deg, #444cf7 12%, transparent 12.5%, transparent 87%, #444cf7 87.5%, #444cf7), linear-gradient(30deg, #444cf7 12%, transparent 12.5%, transparent 87%, #444cf7 87.5%, #444cf7), linear-gradient(150deg, #444cf7 12%, transparent 12.5%, transparent 87%, #444cf7 87.5%, #444cf7), linear-gradient(60deg, #444cf777 25%, transparent 25.5%, transparent 75%, #444cf777 75%, #444cf777), linear-gradient(60deg, #444cf777 25%, transparent 25.5%, transparent 75%, #444cf777 75%, #444cf777); */
+    /* background-image: linear-gradient(30deg, #8a2be2 12%, transparent 12.5%, transparent 87%, #8a2be2 87.5%, #8a2be2), linear-gradient(150deg, #8a2be2 12%, transparent 12.5%, transparent 87%, #8a2be2 87.5%, #8a2be2), linear-gradient(30deg, #8a2be2 12%, transparent 12.5%, transparent 87%, #8a2be2 87.5%, #8a2be2), linear-gradient(150deg, #8a2be2 12%, transparent 12.5%, transparent 87%, #8a2be2 87.5%, #8a2be2), linear-gradient(60deg, #8a2be277 25%, transparent 25.5%, transparent 75%, #8a2be277 75%, #8a2be277), linear-gradient(60deg, #8a2be277 25%, transparent 25.5%, transparent 75%, #8a2be277 75%, #8a2be277); */
+    /* background-image: linear-gradient(30deg, #9370db 12%, transparent 12.5%, transparent 87%, #9370db 87.5%, #9370db), linear-gradient(150deg, #9370db 12%, transparent 12.5%, transparent 87%, #9370db 87.5%, #9370db), linear-gradient(30deg, #9370db 12%, transparent 12.5%, transparent 87%, #9370db 87.5%, #9370db), linear-gradient(150deg, #9370db 12%, transparent 12.5%, transparent 87%, #9370db 87.5%, #9370db), linear-gradient(60deg, #9370db77 25%, transparent 25.5%, transparent 75%, #9370db77 75%, #9370db77), linear-gradient(60deg, #9370db77 25%, transparent 25.5%, transparent 75%, #9370db77 75%, #9370db77); */
+    /* background-image: linear-gradient(30deg, #3cb371 12%, transparent 12.5%, transparent 87%, #3cb371 87.5%, #3cb371), linear-gradient(150deg, #3cb371 12%, transparent 12.5%, transparent 87%, #3cb371 87.5%, #3cb371), linear-gradient(30deg, #3cb371 12%, transparent 12.5%, transparent 87%, #3cb371 87.5%, #3cb371), linear-gradient(150deg, #3cb371 12%, transparent 12.5%, transparent 87%, #3cb371 87.5%, #3cb371), linear-gradient(60deg, #3cb37177 25%, transparent 25.5%, transparent 75%, #3cb37177 75%, #3cb37177), linear-gradient(60deg, #3cb37177 25%, transparent 25.5%, transparent 75%, #3cb37177 75%, #3cb37177); */
+    /* background-size: 20px 35px; */
+    background-image: linear-gradient(30deg, #4169e1 12%, transparent 12.5%, transparent 87%, #4169e1 87.5%, #4169e1), linear-gradient(150deg, #4169e1 12%, transparent 12.5%, transparent 87%, #4169e1 87.5%, #4169e1), linear-gradient(30deg, #4169e1 12%, transparent 12.5%, transparent 87%, #4169e1 87.5%, #4169e1), linear-gradient(150deg, #4169e1 12%, transparent 12.5%, transparent 87%, #4169e1 87.5%, #4169e1), linear-gradient(60deg, #4169e177 25%, transparent 25.5%, transparent 75%, #4169e177 75%, #4169e177), linear-gradient(60deg, #4169e177 25%, transparent 25.5%, transparent 75%, #4169e177 75%, #4169e177);
+    background-position: 0 0, 0 0, 10px 18px, 10px 18px, 0 0, 10px 18px;
+}
+
+.card_back img {
+    width: 70%;
+}
+
+#cards {
+    display: flex;
+    gap: 10px;
+}
+
+.flip-card {
+    background-color: transparent;
+    height: 144px;
+    width: 96px;
+    perspective: 1000px;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s;
+    transform-style: preserve-3d;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.flip-card.flip .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
+#game_info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+#pot {
+    padding: 0.5rem 1rem;
 }
 
 @media (max-width: 600px) {

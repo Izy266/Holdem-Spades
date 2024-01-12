@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;0,800;1,400;1,700&family=Inter:wght@400;500;600;800&family=Style+Script&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <title>Create Lobby</title>
+</head>
+
+<body class="create_lobby">
+    <div class="header">
+        <div class="logo">
+            <img src="../static/img/logo_dark.svg" alt="Holdem Haven Logo" id="logo_img">
+            <div class="title">Holdem Spades</div>
+        </div>
+        <div class="menu">
+            <div class="menu_items">
+                <a href="#">Home</a>
+                <a href="#">How to Play</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <button class="menu_button"></button>
+        </div>
+    </div>
+    <div class="main">
+        <div class="intro">
+            <h2>Create a Game Lobby</h2>
+            <p id="lobby_direction">Please enter details to create a lobby</p>
+        </div>
+
+        <form action="/create_game" method="post">
+            <div class="detail_field">
+                <label for="player_name">Player Name</label>
+                <input type="text" id="player_name" name="player_name">
+            </div>
+            <div class="detail_field">
+                <label for="lobby_pass">Lobby Password (Optional)</label>
+                <input type="password" id="lobby_pass" name="lobby_pass">
+            </div>
+            <div class="detail_field" id="starting_balance_field">
+                <label for="starting_balance">Starting Balance</label>
+                <input type="number" id="starting_balance" name="starting_balance" min="0" step="1">
+            </div>
+            <div class="detail_field" id="small_blind_field">
+                <label for="small_blind">Small Blind</label>
+                <input type="number" id="small_blind" name="small_blind" min="0" step="1">
+            </div>
+            <div class="detail_field" id="big_blind_field">
+                <label for="big_blind">Big Blind</label>
+                <input type="number" id="big_blind" name="big_blind" min="0" step="1">
+            </div>
+            <button type="submit" id = "create_lobby_button">Create Lobby</button>
+        </form>
+
+    </div>
+
+</body>
+
+</html>

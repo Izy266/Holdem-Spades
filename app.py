@@ -62,6 +62,8 @@ def add_player(game_id):
     response.set_cookie('player_id', player_id)
     return response
 
+@app.route('/create_lobby')
+
 @socketio.on('join')
 def on_join(data):
     game_id = data['gameId']

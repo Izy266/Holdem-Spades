@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     options.forEach(option => {
         const button = document.createElement('button');
         const buttonContent = document.createElement('div');
-        const buttonTitle = document.createElement('h2');
+        const buttonTitle = document.createElement('h3');
         buttonContent.setAttribute('class', 'button_content')
         buttonTitle.setAttribute('class', 'button_title'); 
 

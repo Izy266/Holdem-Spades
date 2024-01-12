@@ -16,6 +16,12 @@ h1 {
     text-align: center;
 }
 
+h2 {
+    margin: 0 15px;
+    font-size: 30px;
+    font-weight: 800;
+}
+
 p {
     margin: 0 15px;
     font-size: 21px;
@@ -25,7 +31,7 @@ p {
 }
 
 a {
-    color: white;
+    color: black;
     text-decoration: none;
 }
 
@@ -33,7 +39,7 @@ a:hover {
     text-decoration: underline;
 }
 
-button h2 {
+button h3 {
     margin: 0;
     font-size: 24px;
     text-align: start;
@@ -47,8 +53,9 @@ button p {
 
 .header {
     display: flex;
-    height: 45px;
-    background-color: rgb(29, 41, 55);
+    height: 70px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     align-items: center;
     justify-content: space-between;
 
@@ -66,27 +73,27 @@ button p {
     font-family: "Style Script";
     font-size: 26px;
     margin-top: 3px;
-    color: white;
+    color: black;
     white-space: nowrap;
 }
 
 .menu {
     display: flex;
     height: 100%;
-    width: 400px;
     margin: 15px;
     justify-content: end;
     align-items: center;
 }
 
 .menu_items {
+    display: flex;
     font-weight: 300;
-    font-size: 17px;
+    font-size: 16px;
     letter-spacing: -1px;
     word-spacing: +1px;
-    display: flex;
-    width: 100%;
     justify-content: space-between;
+    text-wrap: nowrap;
+    gap: 2vw;
 }
 
 .menu_button {
@@ -94,7 +101,7 @@ button p {
     height: 100%;
     width: 45px;
 
-    background-image: url("../img/menu.png");
+    background-image: url("../img/menu_dark.png");
     background-color: transparent;
     background-size: 32px 32px;
     background-repeat: no-repeat;
@@ -104,7 +111,11 @@ button p {
 }
 
 .menu_button:hover {
-    background-color: rgb(58, 82, 110);
+    background-color: rgb(0, 0, 0, 0.1);
+}
+
+.create_lobby {
+    font-family: "Inter";
 }
 
 #logo_img {
@@ -121,7 +132,7 @@ button p {
     width: 100%;
 }
 
-.main .intro {
+.intro {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -171,6 +182,67 @@ button p {
     margin-bottom: 0;
 }
 
+#lobby_direction {
+    font-size: 14px;
+}
+
+.create_lobby .intro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    margin: 30px;
+}
+
+.create_lobby input {
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    padding: 0.6rem; 
+    margin: 4px 0;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+.create_lobby input:focus {
+    outline: none;
+    border: 2px solid rgb(68, 74, 277);
+    margin: 2px 0;
+}
+
+.create_lobby form {
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.create_lobby form label {
+    margin-left: 1px;
+}
+
+#create_lobby_button {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 20px 0;
+    width: 100%;
+    padding: 0.6rem;
+    color: white;
+    background-color: rgb(68, 74, 277);
+    border: none;
+    border-radius: 5px;
+}
+
+#create_lobby_button:hover {
+    background-color: rgb(57, 60, 201);
+}
+
+.detail_field {
+    display: flex;
+    flex-direction: column;
+    width: 25rem;
+}
 
 @media (max-width: 600px) {
     h1 {

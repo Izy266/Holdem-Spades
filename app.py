@@ -3,7 +3,7 @@ from flask_socketio import SocketIO, join_room
 import secrets, uuid, json
 from holdem import *
 
-# database instead of dict
+# implement database instead of dict
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(32)
@@ -13,6 +13,10 @@ games = {}
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/create_lobby')
+def create_lobby():
+    return render_template('create_lobby.html')
 
 @app.route('/lobby/<game_id>')
 def lobby(game_id):
@@ -61,8 +65,6 @@ def add_player(game_id):
     response = redirect(url_for('lobby', game_id=game_id))
     response.set_cookie('player_id', player_id)
     return response
-
-@app.route('/create_lobby')
 
 @socketio.on('join')
 def on_join(data):

@@ -1,11 +1,10 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     const options = [
-        {title: 'Beginner', smallBlind: '1', bigBlind: '2', buyIn: '100'}, 
-        {title: 'Casual', smallBlind: '5', bigBlind: '10', buyIn: '500'},
-        {title: 'High Stakes', smallBlind: '50', bigBlind: '100', buyIn: '5000'},
-        {title: 'Professional', smallBlind: '100', bigBlind: '200', buyIn: '1000'},
-        {title: 'Custom'}
+        { title: 'Beginner', smallBlind: '1', bigBlind: '2', buyIn: '100' },
+        { title: 'Casual', smallBlind: '5', bigBlind: '10', buyIn: '500' },
+        { title: 'High Stakes', smallBlind: '50', bigBlind: '100', buyIn: '5000' },
+        { title: 'Professional', smallBlind: '100', bigBlind: '200', buyIn: '1000' },
+        { title: 'Custom' }
     ];
 
     const gameOptionsDiv = document.querySelector('.game_options');
@@ -14,8 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const button = document.createElement('button');
         const buttonContent = document.createElement('div');
         const buttonTitle = document.createElement('h3');
+        button.setAttribute('class', 'game_options_button')
+        button.setAttribute('id', option.title)
         buttonContent.setAttribute('class', 'button_content')
-        buttonTitle.setAttribute('class', 'button_title'); 
+        buttonTitle.setAttribute('class', 'button_title');
 
 
         buttonTitle.innerText = option.title;
@@ -37,5 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         button.appendChild(buttonContent);
         gameOptionsDiv.appendChild(button);
+        button.addEventListener('click', () => {
+            window.location.href = `/create_lobby?buyIn=${option.buyIn}&smallBlind=${option.smallBlind}&bigBlind=${option.bigBlind}`;
+        });
     });
 });

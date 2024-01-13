@@ -4,19 +4,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;0,800;1,400;1,700&family=Inter:wght@400;500;600;800&family=Style+Script&display=swap"
+        rel="stylesheet">
+    <script src="../static/js/player.js"></script>
     <link rel="stylesheet" href="../static/css/styles.css">
-    <title>Join</title>
+    <title>Create Lobby</title>
 </head>
 
-<body>
-    <form id="join-game-form" action="/add_player/{{ game_id }}" method="post">
-        <label for="player_name">Player Name:</label>
-        <input type="text" id="player_name" name="player_name"><br><br>
-        <label for="starting_balance">Starting Balance:</label>
-        <input type="number" id="starting_balance" name="starting_balance" min="0" step="1"><br><br>
-        <button type="submit" id="join">Join Game</button>
-    </form>
-</body>
+<body class="create_lobby">
+    <div class="header">
+        <div class="logo">
+            <a href="/">
+                <img src="../static/img/logo_dark.svg" alt="Holdem Haven Logo" id="logo_img">
+            </a>
+            <div class="title">Holdem Spades</div>
+        </div>
+        <div class="menu">
+            <div class="menu_items">
+                <a href="#">Home</a>
+                <a href="#">How to Play</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <button class="menu_button"></button>
+        </div>
+    </div>
+    <div class="main">
+        <div class="intro">
+            <h2>Create a Game Lobby</h2>
+            <p id="lobby_direction">Please enter details to create a lobby</p>
+        </div>
 
+        <form action="/add_player/{{ game_id }}" method="post" id="lobby_form">
+            <div class="detail_field">
+                <label for="player_name">Player Name</label>
+                <input type="text" id="player_name" name="player_name">
+            </div>
+            <div class="detail_field">
+                <label for="lobby_pass">Lobby Password (Optional)</label>
+                <input type="password" id="lobby_pass" name="lobby_pass">
+            </div>
+            <button type="submit" class="common_button blue_button" id="join_game_button">Join Game</button>
+        </form>
+
+    </div>
+
+</body>
 
 </html>

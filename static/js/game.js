@@ -42,6 +42,7 @@ function makeCard(card) {
         cardFront.className = "card card_front";
     }
 
+    cardFront.setAttribute('id', card);
     return cardFront;
 }
 
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         players.forEach(player => {
             let playerInfo = document.getElementById(player.id);
 
-            if (playerInfo === null) {
+            if (playerInfo == null) {
                 playerInfo = document.createElement('div');
                 playerInfo.setAttribute('id', player.id);
 
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 playerName.innerHTML = player.name;
-            
+
                 playerInfo.setAttribute('class', 'player_info')
                 playerBalance.setAttribute("class", "player_balance value_container");
                 playerName.setAttribute("class", "player_name");
@@ -101,17 +102,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (player.current) {
-                playerInfo.style.border = "1px solid rgb(0, 0, 0, 0.1)";
-                playerInfo.style.backgroundColor = "rgb(0, 100, 0, 0.2)"; 
-                playerInfo.style.boxShadow = "rgba(100, 0, 0, 0.6) 0px 7px 29px 0px";
+                if (playerId == player.id) {
+                    playerInfo.style.backgroundColor = "rgb(200, 0, 0, 0.2)";
+                    playerInfo.style.boxShadow = "rgba(200, 0, 0, 0.6) 0px 7px 29px 0px";
+                } else {
+                    playerInfo.style.backgroundColor = "rgb(0, 0, 200, 0.2)";
+                    playerInfo.style.boxShadow = "rgba(0, 0, 200, 0.35) 0px 5px 15px";
+                }
             } else {
-                playerInfo.style.border = ""; 
-                playerInfo.style.backgroundColor = ""; 
+                playerInfo.style.border = "";
+                playerInfo.style.backgroundColor = "";
                 playerInfo.style.boxShadow = "";
             }
-            console.log(player.creator)
+
+            const hand = playerInfo.querySelector('.player_hand');
             const playerBalance = playerInfo.querySelector('.player_balance')
             playerBalance.innerHTML = `Balance: $${player.balance}`
+
+            if (!player.live) {
+                hand.style.opacity = "0.2";
+            } else {
+                hand.style.opacity = "1";
+            }
         });
     });
 
@@ -128,7 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('game_info', function (data) {
         let delay = 0;
         cbf.innerHTML = "";
-        cards.innerHTML = "";
         pot.innerHTML = `Pot: ${data.pot}`;
 
         if (data.live) {
@@ -152,36 +163,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         data.cards.forEach(card => {
-            const tableCard = makeCard(card);
-            const flipCard = document.createElement('div');
-            const flipCardInner = document.createElement('div');
-            const flipCardFront = document.createElement('div');
-            const flipCardBack = document.createElement('div');
-            const cardBack = document.createElement('div');
-            const cardLogo = document.createElement('img');
+            if (!document.getElementById(card)) {
+                const tableCard = makeCard(card);
+                const flipCard = document.createElement('div');
+                const flipCardInner = document.createElement('div');
+                const flipCardFront = document.createElement('div');
+                const flipCardBack = document.createElement('div');
+                const cardBack = document.createElement('div');
+                const cardLogo = document.createElement('img');
 
-            cardBack.setAttribute('class', 'card card_back');
-            flipCard.setAttribute('class', 'flip-card');
-            flipCardInner.setAttribute('class', 'flip-card-inner');
-            flipCardFront.setAttribute('class', 'flip-card-front');
-            flipCardBack.setAttribute('class', 'flip-card-back');
+                cardBack.setAttribute('class', 'card card_back');
+                flipCard.setAttribute('class', 'flip-card');
+                flipCardInner.setAttribute('class', 'flip-card-inner');
+                flipCardFront.setAttribute('class', 'flip-card-front');
+                flipCardBack.setAttribute('class', 'flip-card-back');
 
-            flipCard.appendChild(flipCardInner);
-            flipCardInner.appendChild(flipCardFront);
-            flipCardInner.appendChild(flipCardBack);
-            flipCardFront.appendChild(cardBack);
-            flipCardBack.appendChild(tableCard);
-            cardBack.appendChild(cardLogo);
-            cards.appendChild(flipCard);
-            
-            delay += 300;
+                flipCard.appendChild(flipCardInner);
+                flipCardInner.appendChild(flipCardFront);
+                flipCardInner.appendChild(flipCardBack);
+                flipCardFront.appendChild(cardBack);
+                flipCardBack.appendChild(tableCard);
+                cardBack.appendChild(cardLogo);
+                cards.appendChild(flipCard);
 
-            setTimeout(function () {
-                flipCard.classList.add('flip');
-            }, delay); 
-
-            cardLogo.src = "../static/img/logo4.svg";
-
+                delay += 300;
+                setTimeout(function () {
+                    flipCard.classList.add('flip');
+                }, delay);
+                cardLogo.src = "../static/img/logo4.svg";
+            }
         });
 
         if (data.cur_player_id === playerId) {

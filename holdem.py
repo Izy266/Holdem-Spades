@@ -23,6 +23,7 @@ class TexasHoldem:
         self.button = 0 # to track sb_turn, bb_turn, and turn at new hand
         self.round = 0
         self.turn = 3 if len(self.players) > 2 else 2
+        self.buy_in = 0
         self.small_blind = 0
         self.big_blind = 0
         self.current_bet = 0
@@ -41,8 +42,10 @@ class TexasHoldem:
 
     def get_live_ind(self, ind):
         ind %= len(self.players)
+        ind_og = ind
         while not self.players[ind].live:
             ind += 1
+            ind %= len(self.players)
         return ind
 
     def cur_player(self):

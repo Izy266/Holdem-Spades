@@ -4,19 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;0,800;1,400;1,700&family=Inter:wght@400;500;600;800&family=Oswald:wght@200;300;400&family=Style+Script&display=swap"
+        rel="stylesheet">
     <script src="../static/js/game.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.min.js"></script>
     <link rel="stylesheet" href="../static/css/styles.css">
     <title>Holdem Haven Game</title>
 </head>
 
-<body>
-    <div id="playerList">
+<body class="game">
+    <div class="header">
+        <div class="logo">
+            <a href="/">
+                <img src="../static/img/logo_dark.svg" alt="Holdem Haven Logo" id="logo_img">
+            </a>
+            <div class="title">Holdem Spades</div>
+        </div>
+        <div id="start_container"></div>
+        <div class="menu">
+            <div class="menu_items">
+                <a href="#">How to Play</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <button class="menu_button"></button>
+        </div>
     </div>
-    <div class="cbfButtons" id="cbf"></div>
-    <div id="gameInfo">
-        <div id="cards"></div>
-        <div id="pot"></div>
+    <div class="main">
+        <div id="player_list">
+        </div>
+        <div id="game_info">
+            <div id="cards"></div>
+            <div class="value_container" id="pot"></div>
+        </div>
+        <div class="cbfButtons" id="cbf"></div>
     </div>
 </body>
 

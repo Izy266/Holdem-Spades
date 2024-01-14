@@ -31,17 +31,13 @@ def play(game_id):
 
 @app.route('/create_game', methods=['POST'])
 def create_game():
-    game = TexasHoldem()
+    player_name = request.form['player_name']
+    game = TexasHoldem(int(request.form['buy_in']), int(request.form['small_blind']), int(request.form['big_blind']))
     game_id = str(uuid.uuid4())
     games[game_id] = game
-    starting_balance = int(request.form['starting_balance'])
-    player_name = request.form['player_name']
-    game.small_blind = request.form['small_blind']
-    game.big_blind = request.form['big_blind']
     player_id = secrets.token_hex(16)
-    game.add_player(player_name, player_id, starting_balance)
+    game.add_player(player_name, player_id, game.buy_in)
     game.creator_id = player_id
-    game.buy_in = starting_balance
     response = redirect(url_for('play', game_id=game_id))
     response.set_cookie('player_id', player_id)
     return response
@@ -106,11 +102,11 @@ def handle_player_action(data):
         elif action == 'fold':
             game.fold()
 
-    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round],'creator': p.id == game.creator_id, 'current': p == game.cur_player() and game.live} for p in game.players])
+    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round], 'current': p == game.cur_player() and game.live} for p in game.players])
     max_score = max([p.score for p in game.players if p.live])
     winners = [p for p in game.players if p.live and p.score == max_score]
     socketio.emit('player_list', players_json, room=game_id)
-    socketio.emit('game_info', {'live': game.live, 'creator_id': game.creator_id, 'cur_player_id': game.cur_player().id, 'cur_bet': game.current_bet, 'pot': game.pot, 'cards': game.community_cards}, room=game_id)
+    socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_bet': game.min_bet}, room=game_id)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

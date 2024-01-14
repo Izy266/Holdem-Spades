@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const form = document.getElementById('lobby_form');
 
-    let buyInField = document.getElementById('starting_balance_field');
+    let buyInField = document.getElementById('buy_in_field');
     let smallBlindField = document.getElementById('small_blind_field');
     let bigBlindField = document.getElementById('big_blind_field');
 
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         form.removeChild(buyInField);
         buyInField = document.createElement('input');
         buyInField.type = 'hidden';
-        buyInField.name = 'starting_balance';
+        buyInField.name = 'buy_in';
         buyInField.value = buyIn;
         form.appendChild(buyInField);
     }

@@ -14,7 +14,7 @@ class Player:
         self.live = True
         
 class TexasHoldem:
-    def __init__(self):
+    def __init__(self, buy_in, small_blind, big_blind):
         self.live = False
         self.players = []
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
@@ -23,9 +23,10 @@ class TexasHoldem:
         self.button = 0 # to track sb_turn, bb_turn, and turn at new hand
         self.round = 0
         self.turn = 3 if len(self.players) > 2 else 2
-        self.buy_in = 0
-        self.small_blind = 0
-        self.big_blind = 0
+        self.buy_in = buy_in
+        self.small_blind = small_blind
+        self.big_blind = big_blind
+        self.min_bet = big_blind
         self.current_bet = 0
         self.round = 0
         self.creator_id = None
@@ -141,13 +142,15 @@ class TexasHoldem:
             top_player.score = [-1]
             self.pot -= profit
 
-    # Handle betting and calling
+    # Handle betting and callingcurrent_bet
     def bet(self, amount = 0, blind = False):
         amount = int(amount)
         player = self.cur_player()
         if player.balance != 0:
             if amount:
-                self.current_bet = amount
+                self.current_bet = amount + player.bets[self.round]
+                self.min_bet = max(self.min_bet, amount - self.current_bet)
+
                 for p in self.players:
                     p.moved = False
             else:

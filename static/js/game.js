@@ -12,27 +12,35 @@ function getCookie(name) {
     return null;
 }
 
-function makeCard(card) {
-    const cardFront = document.createElement('div');
-    const suiteContainer = document.createElement('div');
-    const cardSuite = document.createElement('p');
-    const cardRank = document.createElement('p');
+function parseCard(card) {
     const suiteConv = ['♣', '♥', '♠', '♦'];
     const rankConv = ['J', 'Q', 'K', 'A'];
-
-    suiteContainer.appendChild(cardSuite);
-    cardFront.appendChild(cardRank);
-    cardFront.appendChild(suiteContainer);
-
     let suite = suiteConv[card[1]];
     let rank = card[0];
-
+    
     if (rank > 10) {
         rank = rankConv[rank - 11];
     } else {
         rank = rank.toString();
     }
 
+    return [rank, suite];
+}
+
+function makeCard(card) {
+    const cardFront = document.createElement('div');
+    const suiteContainer = document.createElement('div');
+    const cardSuite = document.createElement('p');
+    const cardRank = document.createElement('p');
+
+    suiteContainer.appendChild(cardSuite);
+    cardFront.appendChild(cardRank);
+    cardFront.appendChild(suiteContainer);
+    cardFront.setAttribute('id', card);
+
+    card = parseCard(card);
+    rank = card[0]
+    suite = card[1]
     cardRank.innerHTML = rank;
     cardSuite.innerHTML = suite;
 
@@ -42,7 +50,6 @@ function makeCard(card) {
         cardFront.className = "card card_front";
     }
 
-    cardFront.setAttribute('id', card);
     return cardFront;
 }
 
@@ -81,6 +88,12 @@ function curPlayer(players) {
     });
 }
 
+function getPlayer(players, id) {
+    return players.find(function (player) {
+        return player.id == id;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const socket = io();
     const gameId = window.location.pathname.split('/').pop();
@@ -88,10 +101,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const cbfContainer = document.getElementById("cbf_container");
     const raiseContainer = document.getElementById("raise_container");
     const pot = document.getElementById("game_pot");
-    const cards = document.getElementById("cards");
+    const comCards = document.getElementById("com_cards");
     const playerList = document.getElementById('player_list');
     const curPlayerInfo = document.getElementById('cur_player_info');
     const checkFold = document.getElementById("check_fold");
+    
     let players = null;
 
     socket.on('connect', () => {
@@ -102,60 +116,71 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('player_list', function (data) {
         players = JSON.parse(data);
         const playerExists = players.some(player => player.id === playerId);
-
+        
+        
         if (!playerExists) {
             window.location.href = '/join/' + gameId;
         }
 
         players.forEach(player => {
             let playerInfo = document.getElementById(player.id);
-            let balanceContainer = document.getElementById('balance_container');
 
             if (playerInfo == null) {
                 playerInfo = document.createElement('div');
                 balanceContainer = document.createElement('div');
                 playerInfo.setAttribute('id', player.id);
-                balanceContainer.setAttribute('class', 'balance_container');
-
+                
                 const playerBalance = document.createElement('div');
-                const playerInPot = document.createElement('div');
+                
                 const playerName = document.createElement('div');
                 const playerHand = document.createElement('div');
+                const pipContainer = document.createElement('div');
 
                 playerName.innerHTML = player.name;
 
                 playerInfo.setAttribute('class', 'player_info')
                 playerBalance.setAttribute("class", "player_balance value_container");
-                playerInPot.setAttribute("class", "player_in_pot pot value_container");
+                playerBalance.setAttribute("id", `balance_${player.id}`);
+                pipContainer.setAttribute('class', 'pip_container');
+                pipContainer.setAttribute("id", `pip_${player.id}`);
+                
                 playerName.setAttribute("class", "player_name");
                 playerHand.setAttribute("class", "player_hand");
 
-                balanceContainer.appendChild(playerBalance);
-                balanceContainer.appendChild(playerInPot);
                 playerInfo.appendChild(playerName);
                 playerInfo.appendChild(playerHand);
-                playerInfo.appendChild(balanceContainer);
+                playerInfo.appendChild(playerBalance);
 
                 if (player.id == playerId) {
+                    curPlayerInfo.appendChild(pipContainer);
                     curPlayerInfo.appendChild(playerInfo);
                 } else {
                     playerList.appendChild(playerInfo);
+                    playerInfo.appendChild(pipContainer);
                 }
             }
 
+            const pipContainer = document.getElementById(`pip_${player.id}`);
+            const playerInPot = document.createElement('div');
+            const playerHand = playerInfo.querySelector('.player_hand')
+            playerInPot.setAttribute("class", "player_in_pot value_container");
+            pipContainer.innerHTML = "";
+
             if (player.current) {
-                playerInfo.style.backgroundColor = "rgb(0, 0, 200, 0.2)";
-                playerInfo.style.boxShadow = "rgba(0, 0, 200, 0.35) 0px 5px 15px";
+                playerHand.style.backgroundColor = "rgb(255,0,0,0.3)";
+                playerHand.style.boxShadow = "0px 0px 40px 30px rgb(255,0,0,0.3)";
 
             } else {
-                playerInfo.style.border = "";
-                playerInfo.style.backgroundColor = "";
-                playerInfo.style.boxShadow = "";
+                playerHand.style.backgroundColor = "rgb(0,0,0,0)";
+                playerHand.style.boxShadow = "none";
             }
 
-            const playerInPot = playerInfo.querySelector('.player_in_pot');
-            playerInPot.innerHTML = `$${player.in_pot}`;
-            const playerBalance = playerInfo.querySelector('.player_balance')
+            if (player.in_pot > 0) {
+                playerInPot.innerHTML = `-$${player.in_pot}`;
+                pipContainer.appendChild(playerInPot);
+            } 
+            
+            const playerBalance = document.getElementById(`balance_${player.id}`);
             playerBalance.innerHTML = `$${player.balance}`;
 
             if (!player.live) {
@@ -174,8 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on(`player_hand`, function (curPlayer) {
         players.forEach(player => {
-            let playerInfo = document.getElementById(player.id);
-            let playerHand = playerInfo.querySelector('.player_hand');
+            const playerInfo = document.getElementById(player.id);
+            const playerHand = playerInfo.querySelector('.player_hand');
+            const bestHand = document.getElementById('best_hand');
             let delay = 0;
             if (playerHand.innerHTML == '') {
                 if (player.id == playerId) {
@@ -192,6 +218,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         cardBack.setAttribute('class', 'card card_back');
                         playerHand.appendChild(cardBack);
                     }
+                }
+            }
+            if (player.id == playerId) {
+                bestHand.innerHTML = '';
+                for (let i = 0; i < curPlayer.best_hand.length; i++) {
+                    bestHand.appendChild(makeCard(curPlayer.best_hand[i]));
                 }
             }
         });
@@ -225,78 +257,119 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        socket.emit('getPlayerHand', { gameId: gameId, playerId: playerId });
+        if (game.hand_over) {
+            const showButton = document.createElement('button');
+            
+            showButton.setAttribute("class", "common_button");
+            showButton.setAttribute("id", "show_button");
+        
+            checkFold.appendChild(showButton);
+        
+            showButton.addEventListener("click", function () {
+                if (currentPlayer.id == playerId) {
+                    checkFold.removeChild(showButton);
+                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, action: 'check' });
+                }
+            });
+            
+            players.forEach(player => {
+                if (player.profit > 0) {
+                    let pipContainer = document.getElementById(`pip_${player.id}`);
+                    let playerProfit = document.createElement('div');
+                    
+                    playerProfit.setAttribute('class', 'player_profit value_container');
+                    pipContainer.appendChild(playerProfit);
+                    playerProfit.innerHTML = `+$${player.profit}`;
+                }    
+            });
+        
+            setTimeout(function() {
+                comCards.innerHTML = ""
 
-        game.cards.forEach(card => {
-            if (!document.getElementById(card)) {
-                delay += 300;
-                cards.appendChild(makeFlipCard(card, delay));
-            }
-        });
-
-        let callAmount = game.current_bet - currentPlayer.in_pot;
-
-        const checkButton = document.createElement("button");
-        const foldButton = document.createElement("button");
-        const raiseButton = document.createElement("button");
-        const raiseSlider = document.createElement("input");
-
-        checkButton.setAttribute("class", "common_button");
-        checkButton.setAttribute("id", "check_button");
-        foldButton.setAttribute("class", "common_button");
-        foldButton.setAttribute("id", "fold_button");
-        raiseButton.setAttribute("class", "common_button");
-        raiseButton.setAttribute("id", "raise_button");
-
-        checkFold.appendChild(checkButton);
-        checkFold.appendChild(foldButton);
-
-        let playerMinBet = Math.min(currentPlayer.balance - currentPlayer.in_pot, game.min_bet + (game.current_bet - currentPlayer.in_pot));
-        if (currentPlayer.balance <= game.current_bet - currentPlayer.in_pot) {
-            playerMinBet = 0;
-        }
-        let raiseAmount = playerMinBet;
-
-        raiseSlider.setAttribute("type", "range");
-        raiseSlider.setAttribute("min", playerMinBet);
-        raiseSlider.setAttribute("max", currentPlayer.balance);
-        raiseSlider.setAttribute("value", playerMinBet);
-        raiseSlider.setAttribute("id", "raise_slider");
-        foldButton.innerHTML = "Fold";
-
-        if (callAmount > 0) {
-            checkButton.innerHTML = `Call<br>$${callAmount}`;
-            raiseButton.innerHTML = "Raise<br>$" + playerMinBet;
+                socket.emit('handStart', { gameId: gameId });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, action: 'none' });
+                players.forEach(p => {
+                    let playerInfo = document.getElementById(playerId);
+                    let playerHand = playerInfo.querySelector('.player_hand');
+                    playerHand.innerHTML = '';
+                    socket.emit('getPlayerHand', { gameId: gameId, playerId: p.id });
+                });
+            }, 5000);
         } else {
-            checkButton.innerHTML = "Check";
-            raiseButton.innerHTML = "Raise<br>$" + playerMinBet;
-        }
+            socket.emit('getPlayerHand', { gameId: gameId, playerId: playerId });
 
-        raiseSlider.oninput = function () {
-            raiseAmount = this.value;
-            raiseButton.innerHTML = "Raise<br>$" + raiseAmount;
-        }
-
-        if (currentPlayer.id == playerId & playerMinBet > 0) {
-            raiseContainer.appendChild(raiseSlider);
-            raiseContainer.appendChild(raiseButton);
-        }
-
-        checkButton.addEventListener("click", function () {
-            if (currentPlayer.id == playerId) {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, action: 'check' });
+            game.cards.forEach(card => {
+                if (!document.getElementById(card)) {
+                    delay += 300;
+                    comCards.appendChild(makeFlipCard(card, delay));
+                }
+            });
+    
+            let callAmount = game.current_bet - getPlayer(players, playerId).in_pot;
+            let playerMinBet = Math.min(currentPlayer.balance - currentPlayer.in_pot, game.min_bet + (game.current_bet - currentPlayer.in_pot));
+            if (currentPlayer.balance <= game.current_bet - currentPlayer.in_pot) {
+                playerMinBet = 0;
             }
-        });
-        raiseButton.addEventListener("click", function () {
-            if (currentPlayer.id == playerId) {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, action: 'bet', amount: raiseAmount });
+            let raiseAmount = playerMinBet;
+    
+            const checkButton = document.createElement("button");
+            const foldButton = document.createElement("button");
+            const raiseButton = document.createElement("button");
+            const raiseSlider = document.createElement("input");
+            
+            checkButton.setAttribute("class", "common_button");
+            checkButton.setAttribute("id", "check_button");
+            foldButton.setAttribute("class", "common_button");
+            foldButton.setAttribute("id", "fold_button");
+            raiseButton.setAttribute("class", "common_button");
+            raiseButton.setAttribute("id", "raise_button");
+            raiseSlider.setAttribute("type", "range");
+            raiseSlider.setAttribute("min", playerMinBet);
+            raiseSlider.setAttribute("max", currentPlayer.balance);
+            raiseSlider.setAttribute("value", playerMinBet);
+            raiseSlider.setAttribute("id", "raise_slider");
+    
+            checkFold.appendChild(checkButton);
+            checkFold.appendChild(foldButton);
+    
+            foldButton.innerHTML = "Fold";
+            if (callAmount > 0) {
+                checkButton.innerHTML = `$${callAmount} Call`;
+                raiseButton.innerHTML = `$${playerMinBet} Raise`;
+                raiseSlider.oninput = function () {
+                    raiseAmount = this.value;
+                    raiseButton.innerHTML = `$${raiseAmount} Raise`;
+                }
+            } else {
+                checkButton.innerHTML = "Check";
+                raiseButton.innerHTML = `$${playerMinBet} Bet`;
+                raiseSlider.oninput = function () {
+                    raiseAmount = this.value;
+                    raiseButton.innerHTML = `$${raiseAmount} Bet`;
+                }
             }
-        });
-
-        foldButton.addEventListener("click", function () {
-            if (currentPlayer.id == playerId) {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, action: 'fold' });
+    
+            if (currentPlayer.id == playerId & playerMinBet > 0) {
+                raiseContainer.appendChild(raiseSlider);
+                raiseContainer.appendChild(raiseButton);
             }
-        });
+    
+            checkButton.addEventListener("click", function () {
+                if (currentPlayer.id == playerId) {
+                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, action: 'check' });
+                }
+            });
+            raiseButton.addEventListener("click", function () {
+                if (currentPlayer.id == playerId) {
+                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, action: 'bet', amount: raiseAmount });
+                }
+            });
+    
+            foldButton.addEventListener("click", function () {
+                if (currentPlayer.id == playerId) {
+                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, action: 'fold' });
+                }
+            });
+        }
     });
 });

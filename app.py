@@ -83,7 +83,7 @@ def get_player_hand(data):
     player_id = data['playerId']
     game = games[game_id]
     player = next(p for p in game.players if p.id == player_id)
-    socketio.emit('player_hand', {'cards': player.hand, 'score': player.score}, room=player_id)
+    socketio.emit('player_hand', {'cards': player.hand, 'score': player.score, 'best_hand': player.best_hand}, room=player_id)
 
 @socketio.on('playerAction')
 def handle_player_action(data):
@@ -102,11 +102,27 @@ def handle_player_action(data):
         elif action == 'fold':
             game.fold()
 
-    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round], 'current': p == game.cur_player() and game.live} for p in game.players])
-    max_score = max([p.score for p in game.players if p.live])
-    winners = [p for p in game.players if p.live and p.score == max_score]
+    round_over = game.round_over()
+    if round_over:
+        game.handle_round_over()
+
+    hand_over = game.hand_over()
+    balances = {p.id: p.balance for p in game.players}
+
+    if hand_over:
+        if action == 'show':
+            for player in game.players:
+                if player.id == player_id:
+                    player.show = True
+        game.distribute_pot()
+
+    for player in game.players:
+        if player.balance - balances[player.id] > 0:
+            player.show = True
+
+    players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round] if game.round < len(p.bets) else 0, 'current': p == game.cur_player() and game.live, 'hand': p.hand if p.show else [], 'score': p.score if p.show else [-1], 'profit': p.balance - balances[p.id]} for p in game.players])
     socketio.emit('player_list', players_json, room=game_id)
-    socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_bet': game.min_bet}, room=game_id)
+    socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_bet': game.min_bet, 'hand_over': hand_over}, room=game_id)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

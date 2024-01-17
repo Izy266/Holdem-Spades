@@ -131,6 +131,7 @@ button p {
     color: white;
     border: none;
     border-radius: 5px;
+    white-space: nowrap;
 }
 
 .blue_button {
@@ -270,7 +271,6 @@ button p {
 
 #player_list {
     display: flex;
-    margin: 10px 0;
 }
 
 .player_info {
@@ -278,23 +278,23 @@ button p {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 15px;
-    padding: 18px 22px;
+    padding: 15px;
     border-radius: 10px;
+    gap: 8px;
 }
 
 .player_name {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 700;
+    line-height: 1rem;
 }
 
 .value_container {
     font-family: "Inter";
     font-size: 15px;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.75rem;
     border-radius: 5px;
     
-    /* background-color: rgb(0, 0, 0, 0.1); */
     background-color: rgba(0, 63, 100, 0.2);
     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
@@ -308,8 +308,8 @@ button p {
 }
 
 .card {
-    height: 130px;
-    width: 86px;
+    height: 100px;
+    width: 70px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     border-radius: 5px;
 }
@@ -317,9 +317,11 @@ button p {
 .card_front {
     display: flex;
     flex-direction: column;
+    background-color: white;
+    line-height: 0;
+    letter-spacing: 0;
     justify-content: space-between;
     align-items: start;
-    background-color: white;
 }
 
 .card_front div {
@@ -330,8 +332,9 @@ button p {
 
 .card_front p {
     font-family: "Oswald";
-    font-size: 39px;
+    font-size: 34px;
     color: black;
+    margin: 34% 17%;
 }
 
 .card_red p {
@@ -340,7 +343,8 @@ button p {
 
 .card_front div p {
     font-family: 'Times New Roman', Times, serif;
-    font-size: 62px;
+    font-size: 52px;
+    margin-bottom: 37%;
 }
 
 .card_back {
@@ -357,15 +361,15 @@ button p {
     width: 70%;
 }
 
-#cards {
+#com_cards {
     display: flex;
     gap: 10px;
 }
 
 .flip-card {
     background-color: transparent;
-    height: 130px;
-    width: 86px;
+    height: 100px;
+    width: 70px;
     perspective: 1000px;
 }
 
@@ -395,6 +399,17 @@ button p {
     transform: rotateY(180deg);
 }
 
+#game_footer {
+    width: 100%;
+    display:grid;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    align-items: center;
+    height: 15vh;
+}
+
 #game_info {
     display: flex;
     flex-direction: column;
@@ -403,13 +418,36 @@ button p {
     gap: 15px;
 }
 
+.pip_container {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .pot {
     background-color: rgb(0, 100, 0, 0.3);
 }
 
+.player_in_pot {
+    background-color: rgb(255, 0, 0, 0.5);
+    display:inline-flex;
+    margin: 10px 0;
+}
+
+.player_profit {
+    background-color: rgb(0, 100, 0, 0.5);
+    display:inline-flex;
+    margin: 10px 0;
+}
+
+
 #cbf_container {
     display: flex;
     flex-direction: column;
+}
+
+#cbf_container .common_button{
+    margin: 5px;
 }
 
 #check_fold {
@@ -434,10 +472,41 @@ button p {
     display: flex;
 }
 
-.balance_container {
+#best_hand {
     display: flex;
-    gap: 10px;
+    width: 100%;
+    gap: 1vw;
+    justify-content: center;
 }
+
+#best_hand .card {
+    height: 65px;
+    width: 43px;
+    border-radius: 5px;
+}
+
+#best_hand .card_front {
+    justify-content: center;
+    align-items: center;
+}
+
+#best_hand .card_front div {
+    justify-content: center;
+}
+
+#best_hand .card_front p {
+    font-size: 24px;
+}
+
+#best_hand .card_front div p {
+    font-size: 36px;
+}
+
+#best_hand .flip-card {
+    height: 65px;
+    width: 43px;
+}
+
 
 @media (max-width: 600px) {
     h1 {

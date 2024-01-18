@@ -151,4 +151,4 @@ def handle_player_action(data):
     socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_raise': game.big_blind, 'hand_over': hand_over}, room=game_id)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app)

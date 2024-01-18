@@ -105,6 +105,7 @@ class TexasHoldem:
         for player in self.players:
             player.hand = [self.deck.pop(), self.deck.pop()]
             player.best_hand = player.hand
+            player.score = [-1]
             player.bets = [0 for _ in range(4)]
             player.profit = 0
             player.moved = False

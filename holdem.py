@@ -261,34 +261,3 @@ class TexasHoldem:
         player.best_hand = all_cards_sorted[:5]
         player.score = [0] + sorted(all_ranks, reverse=True)[:5]
         return player.score
-
-# game = TexasHoldem()
-# game.add_player("Andy", 0, 10000)
-# game.add_player("Bob", 1, 10000)
-# # game.add_player("Cindy", 2, 10000)
-# # game.add_player("David", 3, 10000)
-# game.small_blind = 50
-# game.big_blind = 100
-
-# game.new_hand()
-
-# while True:
-#     print(game.community_cards)        
-#     print(f"{game.cur_player().name}: {game.cur_player().hand} | Score: {game.cur_player().score} | Balance: {game.cur_player().balance}")
-#     print(f"Pot: {game.pot}")
-#     print(f"Current Bet: {game.current_bet}")
-#     print(f"Turn: {game.turn}")
-
-#     user_input = input(f"{game.cur_player().name} ... Check, Bet, or Fold? ").strip().lower()
-#     if user_input == 'check':
-#         game.bet()
-#     elif user_input == 'bet':
-#         user_input = input("How much would you like to bet? ").strip()
-#         game.bet(int(user_input))
-#     elif user_input == 'fold':
-#         game.fold()
-    
-#     print()
-#     if game.if_hand_over():
-#         for player in game.players:
-#             print(f"  {player.name}: {player.balance}  |", end='')

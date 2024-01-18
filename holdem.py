@@ -6,7 +6,8 @@ class Player:
         self.name = name
         self.id = id
         self.balance = balance
-        self.hand = []
+        self.session_id = None
+        self.hand = [None, None]
         self.bets = [0 for _ in range(4)]
         self.stake = 0
         self.score = [-1]
@@ -28,15 +29,13 @@ class TexasHoldem:
         self.buy_in = buy_in
         self.small_blind = small_blind
         self.big_blind = big_blind
-        self.min_bet = big_blind
         self.current_bet = 0
         self.round = -1
         self.creator_id = None
         self.hands = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush']
         self.log = []
 
-    def add_player(self, name, id, balance):
-        player = Player(name, id, balance)
+    def add_player(self, player):
         self.players.append(player)
     
     def get_player(self, name = None, id = None):
@@ -98,6 +97,7 @@ class TexasHoldem:
         self.update_scores()
 
     def new_hand(self):
+        self.round = 0
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
         random.shuffle(self.deck)
         for player in self.players:
@@ -112,7 +112,6 @@ class TexasHoldem:
 
         self.community_cards = []
         self.pot = 0
-        self.round = 0
         self.button = self.get_live_ind(self.button + 1)
         self.turn = self.get_live_ind(self.button + 1 if len(self.players) > 2 else self.button)
         self.bet(self.small_blind, blind = True)
@@ -142,14 +141,13 @@ class TexasHoldem:
             top_player.score = [-1]
             self.pot -= profit
 
-    # Handle betting and callingcurrent_bet
+    # Handle betting and calling
     def bet(self, amount = 0, blind = False):
         amount = int(amount)
         player = self.cur_player()
         if player.balance != 0:
             if amount:
                 self.current_bet = amount + player.bets[self.round]
-                self.min_bet = max(self.min_bet, amount - self.current_bet)
 
                 for p in self.players:
                     p.moved = False

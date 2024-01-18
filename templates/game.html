@@ -9,8 +9,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;0,800;1,400;1,700&family=Inter:wght@400;500;600;800&family=Oswald:wght@200;300;400&family=Style+Script&display=swap"
         rel="stylesheet">
-    <script src="../static/js/game.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.min.js"></script>
+    <script src="../static/js/game.js"></script>
     <link rel="stylesheet" href="../static/css/styles.css">
     <title>Holdem Haven Game</title>
 </head>
@@ -39,20 +39,16 @@
             <div id="com_cards"></div>
             <div class="value_container pot" id="game_pot"></div>
         </div>
-        <div id="cur_player_info"></div>        
+        <div id="cur_player_info"></div>
     </div>
     <div id="game_footer">
         <div id="game_log"></div>
-        <div id="cbf_container">
-            <div id="start_container"></div>
-            <div id="check_fold">
-                <button class="common_button" id="check_button"></button>
-                <button class="common_button" id="fold_button"></button>
-            </div>
-            <div id="raise_container"></div>
-        </div>
+        <div id="choice_container"></div>
         <div id="best_hand"></div>
     </div>
 </body>
 
 </html>
+
+
+

@@ -132,6 +132,11 @@ def handle_player_action(data):
         for player in game.players:
             if game.last_better_id == player.id and player.bets[-1] > 0:
                 player.show = True
+    
+    if game.current_bet == 0 and len([p.id for p in game.players if p.live and p.balance > 0]) < 2:
+        for player in game.players:
+            if player.live:
+                player.show = True
 
     for player in game.players:
         players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round] if game.round < len(p.bets) else 0, 'current': p == game.cur_player(), 'hand': p.hand if (p.show or p.id == player.id) else [None, None] if p.hand else [], 'best_hand': p.best_hand if p.id == player.id else [], 'score': p.score if (p.show or p.id == player.id) else [-1], 'profit': p.profit, 'show': p.show} for p in game.players])

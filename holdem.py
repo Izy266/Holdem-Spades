@@ -151,20 +151,20 @@ class TexasHoldem:
     def bet(self, amount = 0, blind = False):
         amount = int(amount)
         player = self.cur_player()
-        if player.balance != 0:
-            if amount:
-                self.last_better_id = player.id
-                self.current_bet = amount + player.bets[self.round]
-                for p in self.players:
-                    p.moved = False
-            else:
-                amount = self.current_bet - player.bets[self.round]
+        
+        if amount:
+            self.last_better_id = player.id
+            self.current_bet = amount + player.bets[self.round]
+            for p in self.players:
+                p.moved = False
+        else:
+            amount = self.current_bet - player.bets[self.round]
 
-            player.moved = not blind
-            bet = min(player.balance, amount)
-            player.bets[self.round] += bet
-            self.pot += bet
-            player.balance -= bet
+        player.moved = not blind
+        bet = min(player.balance, amount)
+        player.bets[self.round] += bet
+        self.pot += bet
+        player.balance -= bet
             
         self.turn += 1
             

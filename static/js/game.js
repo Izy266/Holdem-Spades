@@ -175,6 +175,7 @@ socket.on('game_info', game => {
             const hand = playerInfo.querySelector('.player_hand');
             const cardsInHand = hand.children;
             const balance = playerInfo.querySelector('.player_balance');
+            let playerScore = playerInfo.querySelector('.score');
             let netChange = playerInfo.querySelector('#net_change');
             let delay = 0;
             let cardIds = [];
@@ -231,6 +232,17 @@ socket.on('game_info', game => {
             if (player.profit > 0) {
                 netChange.innerHTML = `+$${player.profit}`;
                 netChange.style.backgroundColor = 'rgb(0, 100, 0, 0.5)';
+            }
+
+            if (game.hand_over & player.id != playerId & player.score[0] > -1 & playerScore == null) {
+                const score = document.createElement('div');
+                score.setAttribute('class', 'score');
+                score.innerHTML = `${scoreRanking[player.score[0]]}`;
+                playerInfo.appendChild(score);
+            }
+
+            if (!game.hand_over & playerScore != null) {
+                playerInfo.removeChild(playerScore);
             }
 
             if (!player.live) {
@@ -304,12 +316,21 @@ socket.on('game_info', game => {
     raiseSlider.setAttribute('value', minRaise);
     raiseSlider.setAttribute('id', 'raise_slider');
     bestHandScore.setAttribute('id', 'best_hand_score');
+    bestHandScore.setAttribute('class', 'score');
     bestHandCards.setAttribute('id', 'best_hand_cards');
 
     mainChoices.appendChild(callButton);
     mainChoices.appendChild(foldButton);
 
-    if (!game.hand_over) {
+    if (!game.hand_over && (thisPlayer.balance === 0 || (callAmount == 0 & players.filter(p => p.live && p.balance > 0).length < 2))) {
+        choiceContainer.innerHTML = '';
+        if (playerId == turnPlayer.id) {
+            const checkDelay = 1000;
+            setTimeout(() => {
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
+            }, checkDelay);
+        }
+    } else if (!game.hand_over) {
         let raiseAction = 'Raise';
         foldButton.innerHTML = 'Fold';
 
@@ -343,7 +364,7 @@ socket.on('game_info', game => {
                 }
                 raiseContainer.appendChild(raiseSlider);
                 raiseContainer.appendChild(raiseButton);
-            } else {
+            } else if (thisPlayer.balance > 0) {
                 raiseButton.innerHTML = `$${thisPlayer.balance} All-in`;
                 raiseContainer.appendChild(raiseButton);
             }

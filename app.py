@@ -139,7 +139,13 @@ def handle_player_action(data):
                 player.show = True
 
     for player in game.players:
-        players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round] if game.round < len(p.bets) else 0, 'current': p == game.cur_player(), 'hand': p.hand if (p.show or p.id == player.id) else [None, None] if p.hand else [], 'best_hand': p.best_hand if p.id == player.id else [], 'score': p.score if (p.show or p.id == player.id) else [-1], 'profit': p.profit, 'show': p.show} for p in game.players])
+        if action in ['check', 'fold'] and player.id == player_id:       
+            player.next_move = None if player.next_move == action else action
+        
+        if action == 'bet' or player.id == cur_player.id:
+            player.next_move = None
+
+        players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round] if game.round < len(p.bets) else 0, 'current': p == game.cur_player(), 'next_move': p.next_move if p.id == player.id else None, 'hand': p.hand if (p.show or p.id == player.id) else [None, None] if p.hand else [], 'best_hand': p.best_hand if p.id == player.id else [], 'score': p.score if (p.show or p.id == player.id) else [-1], 'profit': p.profit, 'show': p.show} for p in game.players])
         socketio.emit('player_list', players_json, room=player.id)
 
     socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_raise': game.big_blind, 'hand_over': hand_over}, room=game_id)

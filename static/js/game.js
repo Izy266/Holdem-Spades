@@ -305,12 +305,11 @@ socket.on('game_info', game => {
     const bestHandScore = document.createElement('div');
     const bestHandCards = document.createElement('div');
 
-    callButton.setAttribute('class', 'common_button');
+    callButton.setAttribute('class', 'common_button blue_button');
     callButton.setAttribute('id', 'call_button');
-    foldButton.setAttribute('class', 'common_button');
+    foldButton.setAttribute('class', 'common_button red_button');
     foldButton.setAttribute('id', 'fold_button');
-    raiseButton.setAttribute('class', 'common_button');
-    raiseButton.setAttribute('id', 'raise_button');
+    raiseButton.setAttribute('class', 'common_button green_button');
     raiseSlider.setAttribute('type', 'range');
     raiseSlider.setAttribute('min', minRaise);
     raiseSlider.setAttribute('max', thisPlayer.balance);
@@ -323,6 +322,19 @@ socket.on('game_info', game => {
     mainChoices.appendChild(callButton);
     mainChoices.appendChild(foldButton);
 
+    if (thisPlayer.next_move != null) {
+        if (thisPlayer.next_move == 'check') {
+            callButton.classList.add('active');
+            foldButton.classList.remove('active');
+        } else {
+            foldButton.classList.add('active');
+            callAmount.classList.remove('active');
+        }
+    } else {
+        callButton.classList.remove('active');
+        foldButton.classList.remove('active');
+    }
+
     if (autoCheck) {
         choiceContainer.innerHTML = '';
         if (playerId == turnPlayer.id) {
@@ -330,6 +342,12 @@ socket.on('game_info', game => {
             setTimeout(() => {
                 socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
             }, checkDelay);
+        }
+    } else if (!game.hand_over & playerId == turnPlayer.id & turnPlayer.next_move != null) {
+        if (turnPlayer.next_move == 'check') {
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
+        } else if (turnPlayer.next_move == 'fold') {
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
         }
     } else if (!game.hand_over) {
         let raiseAction = 'Raise';
@@ -343,15 +361,11 @@ socket.on('game_info', game => {
         }
 
         callButton.addEventListener("click", () => {
-            if (playerId == turnPlayer.id) {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
-            }
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
         });
 
         foldButton.addEventListener("click", () => {
-            if (playerId == turnPlayer.id) {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
-            }
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
         });
 
         if (playerId == turnPlayer.id) {

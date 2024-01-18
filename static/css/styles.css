@@ -133,6 +133,11 @@ button p {
     border: none;
     border-radius: 5px;
     white-space: nowrap;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.common_button:active {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
 
 .blue_button {
@@ -141,6 +146,32 @@ button p {
 
 .blue_button:hover {
     background-color: rgb(57, 60, 201);
+}
+
+.red_button {
+    background-color: rgb(277, 74, 68);
+}
+
+.red_button:hover {
+    background-color: rgb(201, 60, 57);
+}
+
+.green_button {
+    background-color: rgb(21, 177, 21);
+}
+
+.green_button:hover {
+    background-color: rgb(17, 141, 17);
+}
+
+#call_button.active {
+    background-color: rgb(57, 60, 201);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+#fold_button.active {
+    background-color: rgb(201, 60, 57);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
 
 .create_lobby {
@@ -446,19 +477,6 @@ button p {
 
 #main_choices {
     display: flex;
-}
-
-#call_button {
-    background-color: #4169e1;
-}
-
-
-#fold_button {
-    background-color: #F64145;
-}
-
-#raise_button {
-    background-color: #00C560;
 }
 
 #raise_container {

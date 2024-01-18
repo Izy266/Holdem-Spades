@@ -15,6 +15,7 @@ class Player:
         self.live = True
         self.show = False
         self.profit = 0
+        self.next_move = None
         
 class TexasHoldem:
     def __init__(self, buy_in, small_blind, big_blind):
@@ -151,7 +152,7 @@ class TexasHoldem:
     def bet(self, amount = 0, blind = False):
         amount = int(amount)
         player = self.cur_player()
-        
+
         if amount:
             self.last_better_id = player.id
             self.current_bet = amount + player.bets[self.round]

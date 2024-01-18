@@ -203,8 +203,8 @@ socket.on('game_info', game => {
                 hand.style.backgroundColor = 'rgb(255,0,0,0.3)';
                 hand.style.boxShadow = '0px 0px 40px 30px rgb(255,0,0,0.3)';
             } else if (player.profit > 0) {
-                hand.style.backgroundColor = 'rgb(0,100,0,0.3)';
-                hand.style.boxShadow = '0px 0px 40px 30px rgb(0,100,0,0.3)';
+                hand.style.backgroundColor = 'rgb(0,0,255,0.3)';
+                hand.style.boxShadow = '0px 0px 40px 30px rgb(0,0,255,0.3)';
             } else {
                 hand.style.backgroundColor = 'rgb(0,0,0,0)';
                 hand.style.boxShadow = 'none';

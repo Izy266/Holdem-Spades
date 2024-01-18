@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;0,800;1,400;1,700&family=Inter:wght@400;500;600;800&family=Style+Script&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;0,800;1,400;1,700&family=Inter:wght@400;500;600;800&family=Oswald:wght@200;300;400&family=Style+Script&display=swap"
         rel="stylesheet">
     <script src="../static/js/createLobby.js"></script>
     <link rel="stylesheet" href="../static/css/styles.css">
@@ -49,15 +49,21 @@
             </div>
             <div class="detail_field" id="buy_in_field">
                 <label for="buy_in">Buy-in</label>
-                <input type="number" id="buy_in" name="buy_in" min="0" step="1">
+                <input type="number"
+                    onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13 || event.charCode == 46) ? null : event.charCode >= 48 && event.charCode <= 57"
+                    id="buy_in" name="buy_in" min="0" step="1">
             </div>
             <div class="detail_field" id="small_blind_field">
                 <label for="small_blind">Small Blind</label>
-                <input type="number" id="small_blind" name="small_blind" min="0" step="1">
+                <input type="number"
+                    onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13 || event.charCode == 46) ? null : event.charCode >= 48 && event.charCode <= 57"
+                    id="small_blind" name="small_blind" min="0" step="1">
             </div>
             <div class="detail_field" id="big_blind_field">
                 <label for="big_blind">Big Blind</label>
-                <input type="number" id="big_blind" name="big_blind" min="0" step="1">
+                <input type="number"
+                    onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13 || event.charCode == 46) ? null : event.charCode >= 48 && event.charCode <= 57"
+                    id="big_blind" name="big_blind" min="0" step="1">
             </div>
             <button type="submit" class="common_button blue_button" id="create_lobby_button">Create Lobby</button>
         </form>

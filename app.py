@@ -56,6 +56,7 @@ def add_player(game_id):
     session_id = secrets.token_hex(16)
     player = Player(player_name, player_id, game.buy_in)
     player.session_id = session_id
+    player.live = not game.live
     game.add_player(player)
     response = redirect(url_for('play', game_id=game_id))
     response.set_cookie('player_id', player_id, secure=True)
@@ -86,11 +87,12 @@ def start_game(data):
     game = games[game_id]
     player_sessions = {p.id: p.session_id for p in game.players}
 
-    if game.creator_id == player_id and player_sessions[player_id] == session_id and game.round < 0:
-        game.new_hand()
-        game.live = True
-    elif game.hand_over():
-        game.new_hand()
+    if len([p.id for p in game.players if p.balance]) > 1:
+        if game.creator_id == player_id and player_sessions[player_id] == session_id and game.round < 0:
+            game.new_hand()
+            game.live = True
+        elif game.hand_over():
+            game.new_hand()
 
 @socketio.on('playerAction')
 def handle_player_action(data):
@@ -99,7 +101,11 @@ def handle_player_action(data):
     player_id = data['playerId']
     session_id = data['sessionId']
     game = games[game_id]
+    player_sessions = {p.id: p.session_id for p in game.players}
     cur_player = game.cur_player()
+
+    if session_id != player_sessions[player_id]:
+        return
     
     if player_id == cur_player.id:
         if action == 'check':
@@ -115,23 +121,20 @@ def handle_player_action(data):
         game.handle_round_over()
 
     hand_over = game.hand_over()
-    balances = {p.id: p.balance for p in game.players}
 
     if hand_over:
         game.distribute_pot()
-        for player in game.players:
-            player.live = True
         if action == 'show':
             for player in game.players:
                 if player.id == player_id:
                     player.show = True
         
-    for player in game.players:
-        if player.balance - balances[player.id] > 0:
-            player.show = True
+        for player in game.players:
+            if game.last_better_id == player.id and player.bets[-1] > 0:
+                player.show = True
 
     for player in game.players:
-        players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round] if game.round < len(p.bets) else 0, 'current': p == game.cur_player(), 'hand': p.hand if (p.show or p.id == player.id) else [None, None], 'best_hand': p.best_hand if p.id == player.id else [], 'score': p.score if (p.show or p.id == player.id) else [-1], 'profit': p.balance - balances[p.id]} for p in game.players])
+        players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round] if game.round < len(p.bets) else 0, 'current': p == game.cur_player(), 'hand': p.hand if (p.show or p.id == player.id) else [None, None] if p.hand else [], 'best_hand': p.best_hand if p.id == player.id else [], 'score': p.score if (p.show or p.id == player.id) else [-1], 'profit': p.profit, 'show': p.show} for p in game.players])
         socketio.emit('player_list', players_json, room=player.id)
 
     socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_raise': game.big_blind, 'hand_over': hand_over}, room=game_id)

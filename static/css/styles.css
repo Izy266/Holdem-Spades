@@ -60,7 +60,6 @@ button p {
     justify-content: space-between;
 }
 
-
 .header a {
     display: flex;
     height: 100%;
@@ -95,12 +94,13 @@ button p {
 
 .menu_items {
     display: flex;
+    font-family: "Inter Tight";
     font-weight: 300;
     font-size: 16px;
     word-spacing: +1px;
     justify-content: space-between;
-    text-wrap: nowrap;
-    gap: 2vw;
+    white-space: nowrap;
+    gap: 1vw;
 }
 
 .menu_button {
@@ -123,8 +123,9 @@ button p {
 }
 
 .common_button {
+    font-family: "Inter";
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 600;
     margin: 20px 0;
     width: 100%;
     padding: 0.6rem;
@@ -179,7 +180,7 @@ button p {
     width: 200px;
     height: 200px;
     background-color: white;
-    border: 1px solid rgb(0, 0, 0, 0.1);
+    border: none;
     border-radius: 5px;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     font-family: "Inter Tight";
@@ -271,6 +272,8 @@ button p {
 
 #player_list {
     display: flex;
+    align-items: start;
+    gap: 5vw;
 }
 
 .player_info {
@@ -401,7 +404,7 @@ button p {
 
 #game_footer {
     width: 100%;
-    display:grid;
+    display: grid;
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     grid-template-columns: repeat(3, 1fr);
@@ -419,7 +422,7 @@ button p {
 }
 
 .pip_container {
-    display:flex;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -437,12 +440,12 @@ button p {
     flex-direction: column;
 }
 
-#choice_container .common_button{
+#choice_container .common_button {
     margin: 5px;
 }
 
 #main_choices {
-    display:flex;
+    display: flex;
 }
 
 #call_button {
@@ -463,6 +466,19 @@ button p {
 }
 
 #best_hand {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+#best_hand_score {
+    font-weight: 800;
+}
+
+#best_hand_cards {
     display: flex;
     width: 100%;
     gap: 1vw;

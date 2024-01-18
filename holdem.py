@@ -7,14 +7,14 @@ class Player:
         self.id = id
         self.balance = balance
         self.session_id = None
-        self.hand = [None, None]
+        self.hand = []
         self.bets = [0 for _ in range(4)]
-        self.stake = 0
         self.score = [-1]
         self.best_hand = []
         self.moved = False
         self.live = True
         self.show = False
+        self.profit = 0
         
 class TexasHoldem:
     def __init__(self, buy_in, small_blind, big_blind):
@@ -32,6 +32,7 @@ class TexasHoldem:
         self.current_bet = 0
         self.round = -1
         self.creator_id = None
+        self.last_better_id = None
         self.hands = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush']
         self.log = []
 
@@ -87,7 +88,6 @@ class TexasHoldem:
             diff = max_bet - bet_ceil
             max_better.bets[self.round] = bet_ceil
             max_better.balance += diff
-            max_better.stake -= diff
             self.pot -= diff
         
         self.turn = (self.button + 1) % len(self.players)
@@ -98,20 +98,20 @@ class TexasHoldem:
 
     def new_hand(self):
         self.round = 0
+        self.pot = 0
+        self.community_cards = []
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
         random.shuffle(self.deck)
         for player in self.players:
             player.hand = [self.deck.pop(), self.deck.pop()]
             player.best_hand = player.hand
             player.bets = [0 for _ in range(4)]
-            player.stake = 0
-            player.score = self.score(player)
+            player.profit = 0
             player.moved = False
             player.show = False
-            player.live = bool(player.balance)
-
-        self.community_cards = []
-        self.pot = 0
+            player.live = player.balance > 0
+            self.score(player)
+        
         self.button = self.get_live_ind(self.button + 1)
         self.turn = self.get_live_ind(self.button + 1 if len(self.players) > 2 else self.button)
         self.bet(self.small_blind, blind = True)
@@ -119,27 +119,32 @@ class TexasHoldem:
 
     def distribute_pot(self):
         max_win = defaultdict(int)
+        scores = [p.score for p in self.players if p.live]
+        stakes = {p.id: sum(p.bets) for p in self.players}
         in_pot = self.pot
 
         # Calculate max possible win for each player
         while in_pot:
-            bets = [p.stake for p in self.players if p.stake]
+            bets = [stakes[p.id] for p in self.players if stakes[p.id]]
             min_bet = min(bets)
             for p in self.players:
-                if p.stake:
+                if stakes[p.id]:
                     max_win[p.id] += min_bet * len(bets) if p.live else 0
-                    p.stake -= min_bet
+                    stakes[p.id] -= min_bet
                     in_pot -= min_bet
 
         # Calculate winners and split pot
         while self.pot:
-            max_score = max([p.score for p in self.players if p.live])
+            max_score = max(scores)
+            scores = [score for score in scores if score != max_score]
             winners = [p for p in self.players if p.live and p.score == max_score]
-            top_player = winners[0]
-            profit = min(max_win[top_player.id], self.pot//len(winners))
-            top_player.balance += profit
-            top_player.score = [-1]
-            self.pot -= profit
+            while winners:
+                winners[-1].show = True
+                profit = min(max_win[winners[0].id], self.pot//len(winners))
+                winners[-1].balance += profit
+                winners[-1].profit = profit
+                self.pot -= profit
+                winners.pop()
 
     # Handle betting and calling
     def bet(self, amount = 0, blind = False):
@@ -147,8 +152,8 @@ class TexasHoldem:
         player = self.cur_player()
         if player.balance != 0:
             if amount:
+                self.last_better_id = player.id
                 self.current_bet = amount + player.bets[self.round]
-
                 for p in self.players:
                     p.moved = False
             else:
@@ -156,7 +161,6 @@ class TexasHoldem:
 
             player.moved = not blind
             bet = min(player.balance, amount)
-            player.stake += bet
             player.bets[self.round] += bet
             self.pot += bet
             player.balance -= bet

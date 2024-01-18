@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { title: 'Beginner', smallBlind: '1', bigBlind: '2', buyIn: '100' },
         { title: 'Casual', smallBlind: '5', bigBlind: '10', buyIn: '500' },
         { title: 'High Stakes', smallBlind: '50', bigBlind: '100', buyIn: '5000' },
-        { title: 'Professional', smallBlind: '100', bigBlind: '200', buyIn: '1000' },
+        { title: 'Professional', smallBlind: '100', bigBlind: '200', buyIn: '10000' },
         { title: 'Custom' }
     ];
 

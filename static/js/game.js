@@ -357,10 +357,10 @@ socket.on('game_info', game => {
 
     } else {
         const newGameDelay = 8000;
+        mainChoices.removeChild(foldButton);
 
         if (!thisPlayer.show & thisPlayer.live) {
             callButton.innerHTML = 'Show';
-            foldButton.innerHTML = 'Muck';
 
             callButton.addEventListener("click", () => {
                 socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'show' });

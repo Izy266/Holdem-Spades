@@ -153,6 +153,7 @@ socket.on('game_info', game => {
     const bestHand = document.getElementById('best_hand');
     const thisPlayer = getPlayer(players, playerId);
     const turnPlayer = curPlayer(players);
+    const autoCheck = !game.hand_over && (turnPlayer.balance == 0 || (game.current_bet == 0 & players.filter(p => p.live && p.balance > 0).length < 2))
 
     choiceContainer.innerHTML = '';
     bestHand.innerHTML = '';
@@ -198,7 +199,7 @@ socket.on('game_info', game => {
                 });
             }
 
-            if (player.current & !game.hand_over) {
+            if (player.current & !game.hand_over & !autoCheck) {
                 hand.style.backgroundColor = 'rgb(255,0,0,0.3)';
                 hand.style.boxShadow = '0px 0px 40px 30px rgb(255,0,0,0.3)';
             } else if (player.profit > 0) {
@@ -322,10 +323,10 @@ socket.on('game_info', game => {
     mainChoices.appendChild(callButton);
     mainChoices.appendChild(foldButton);
 
-    if (!game.hand_over && (thisPlayer.balance === 0 || (callAmount == 0 & players.filter(p => p.live && p.balance > 0).length < 2))) {
+    if (autoCheck) {
         choiceContainer.innerHTML = '';
         if (playerId == turnPlayer.id) {
-            const checkDelay = 1000;
+            const checkDelay = 700;
             setTimeout(() => {
                 socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
             }, checkDelay);

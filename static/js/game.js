@@ -328,7 +328,7 @@ socket.on('game_info', game => {
             foldButton.classList.remove('active');
         } else {
             foldButton.classList.add('active');
-            callAmount.classList.remove('active');
+            callButton.classList.remove('active');
         }
     } else {
         callButton.classList.remove('active');

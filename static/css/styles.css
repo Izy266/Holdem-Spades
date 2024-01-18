@@ -219,11 +219,11 @@ button p {
 }
 
 .game_options button:hover {
-    background-color: rgb(0, 0, 0, 0.1);
+    background-color: rgb(0, 0, 0, 0.05);
 }
 
 .game_options button:active {
-    box-shadow: rgba(0, 0, 0, 0.2) 1.25px 0.95px 2px;
+    box-shadow: rgba(0, 0, 0, 0.1) 1.25px 0.95px 2px;
     transform: translate(-0.75px, -1.05px);
 }
 

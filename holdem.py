@@ -109,6 +109,7 @@ class TexasHoldem:
             player.score = [-1]
             player.bets = [0 for _ in range(4)]
             player.profit = 0
+            player.next_move = None
             player.moved = False
             player.show = False
             player.live = player.balance > 0

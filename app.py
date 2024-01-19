@@ -42,8 +42,8 @@ def create_game():
     game.add_player(player)
     game.creator_id = player_id
     response = redirect(url_for('play', game_id=game_id))
-    response.set_cookie('player_id', player_id, secure=True)
-    response.set_cookie('session_id', session_id, secure=True)
+    response.set_cookie('player_id', player_id)
+    response.set_cookie('session_id', session_id)
     return response
 
 @app.route('/add_player/<game_id>', methods=['POST'])
@@ -59,8 +59,8 @@ def add_player(game_id):
     player.live = not game.live
     game.add_player(player)
     response = redirect(url_for('play', game_id=game_id))
-    response.set_cookie('player_id', player_id, secure=True)
-    response.set_cookie('session_id', session_id, secure=True)
+    response.set_cookie('player_id', player_id)
+    response.set_cookie('session_id', session_id)
     return response
 
 @socketio.on('join')
@@ -151,4 +151,4 @@ def handle_player_action(data):
     socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_raise': game.big_blind, 'hand_over': hand_over}, room=game_id)
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, debug=True)

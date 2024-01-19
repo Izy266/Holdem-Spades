@@ -88,25 +88,15 @@ function makeCardFlip(card, delay) {
     return flipCard;
 }
 
-function curPlayer(players) {
-    return players.find(function (player) {
-        return player.current;
-    });
-}
-
-function getPlayer(players, id) {
-    return players.find(function (player) {
-        return player.id == id;
-    });
-}
-
 function makePlayer(player) {
+    const infoContainer = document.createElement('div');
     const playerInfo = document.createElement('div');
     const name = document.createElement('div');
     const hand = document.createElement('div');
     const balance = document.createElement('div');
 
-    playerInfo.setAttribute('id', player.id);
+    infoContainer.setAttribute('id', player.id);
+    infoContainer.setAttribute('class', 'info_container');
     playerInfo.setAttribute('class', 'player_info');
     name.setAttribute('class', 'player_name');
     hand.setAttribute('class', 'player_hand');
@@ -115,11 +105,12 @@ function makePlayer(player) {
     playerInfo.appendChild(name);
     playerInfo.appendChild(hand);
     playerInfo.appendChild(balance);
+    infoContainer.appendChild(playerInfo);
 
     name.innerHTML = player.name;
     balance.innerHTML = `$${player.balance}`;
 
-    return playerInfo;
+    return infoContainer;
 }
 
 const socket = io();
@@ -146,38 +137,44 @@ socket.on('player_list', playerData => {
 
 socket.on('game_info', game => {
     const playerList = document.getElementById('player_list');
-    const curPlayerInfo = document.getElementById('cur_player_info');
     const pot = document.getElementById('game_pot');
     const choiceContainer = document.getElementById('choice_container');
     const comCards = document.getElementById('com_cards');
     const bestHand = document.getElementById('best_hand');
-    const thisPlayer = getPlayer(players, playerId);
-    const turnPlayer = curPlayer(players);
+    const thisPlayer = players.find(player => player.id == playerId);
+    const thisPlayerIndex = players.findIndex(player => player.id == playerId);
+    const totalPlayers = players.length;
+    const midPoint = Math.floor(totalPlayers / 2);
+    const turnPlayer = players.find(player => player.current);
     const autoCheck = !game.hand_over && (turnPlayer.balance == 0 || (game.current_bet == 0 & players.filter(p => p.live && p.balance > 0).length < 2))
 
     choiceContainer.innerHTML = '';
     bestHand.innerHTML = '';
     pot.innerHTML = `Pot: $${game.pot}`;
 
-    players.forEach(player => {
-        let playerInfo = document.getElementById(player.id);
+    players.forEach((player, index) => {
+        let infoContainer = document.getElementById(player.id);
 
-        if (playerInfo == null) {
-            playerInfo = makePlayer(player, player.id == playerId);
-
-            if (player.id == playerId) {
-                curPlayerInfo.appendChild(playerInfo);
-            } else {
-                playerList.appendChild(playerInfo);
-            }
+        if (infoContainer == null) {
+            infoContainer = makePlayer(player, player.id == playerId);
+            playerList.appendChild(infoContainer);
         }
+        
+        let indDiff = index - thisPlayerIndex;
+        let offset = Math.abs(indDiff) > midPoint ? ((index > midPoint) ? index - players.length : index + 1) : indDiff;
+        infoContainer.style.gridColumn = `${4 + offset}`;
+        infoContainer.style.gridRow = 1;
+
+        void infoContainer.offsetHeight; 
+
+        const playerInfo = infoContainer.querySelector('.player_info');
 
         if (game.live) {
             const hand = playerInfo.querySelector('.player_hand');
             const cardsInHand = hand.children;
             const balance = playerInfo.querySelector('.player_balance');
-            let playerScore = playerInfo.querySelector('.score');
-            let netChange = playerInfo.querySelector('#net_change');
+            let playerScore = infoContainer.querySelector('.score');
+            let netChange = infoContainer.querySelector('#net_change');
             let delay = 0;
             let cardIds = [];
 
@@ -199,30 +196,27 @@ socket.on('game_info', game => {
                 });
             }
 
-            if (player.current & !game.hand_over & !autoCheck) {
-                hand.style.backgroundColor = 'rgb(255,0,0,0.3)';
-                hand.style.boxShadow = '0px 0px 40px 30px rgb(255,0,0,0.3)';
-            } else if (player.profit > 0) {
-                hand.style.backgroundColor = 'rgb(0,0,255,0.3)';
-                hand.style.boxShadow = '0px 0px 40px 30px rgb(0,0,255,0.3)';
-            } else {
-                hand.style.backgroundColor = 'rgb(0,0,0,0)';
-                hand.style.boxShadow = 'none';
-            }
+            // if (player.current & !game.hand_over & !autoCheck) {
+            //     hand.style.backgroundColor = 'rgb(255,0,0,0.3)';
+            //     hand.style.boxShadow = '0px 0px 40px 30px rgb(255,0,0,0.3)';
+            // } else if (player.profit > 0) {
+            //     hand.style.backgroundColor = 'rgb(0,0,255,0.3)';
+            //     hand.style.boxShadow = '0px 0px 40px 30px rgb(0,0,255,0.3)';
+            // } else {
+            //     hand.style.backgroundColor = 'rgb(0,0,0,0)';
+            //     hand.style.boxShadow = 'none';
+            // }
 
             if (netChange == null) {
                 if ((player.in_pot > 0 & !game.hand_over) || player.profit > 0) {
                     netChange = document.createElement('div');
                     netChange.setAttribute('class', 'value_container');
                     netChange.setAttribute('id', 'net_change');
-                    if (player.id == playerId) {
-                        playerInfo.insertBefore(netChange, playerInfo.firstChild);
-                    } else {
-                        playerInfo.appendChild(netChange);
-                    }
+                    infoContainer.appendChild(netChange);
+
                 }
             } else if (!(player.in_pot > 0 & !game.hand_over || player.profit > 0)) {
-                playerInfo.removeChild(netChange);
+                infoContainer.removeChild(netChange);
             }
 
             if (player.in_pot > 0) {
@@ -239,11 +233,11 @@ socket.on('game_info', game => {
                 const score = document.createElement('div');
                 score.setAttribute('class', 'score');
                 score.innerHTML = `${scoreRanking[player.score[0]]}`;
-                playerInfo.appendChild(score);
+                infoContainer.appendChild(score);
             }
 
             if (!game.hand_over & playerScore != null) {
-                playerInfo.removeChild(playerScore);
+                infoContainer.removeChild(playerScore);
             }
 
             if (!player.live) {

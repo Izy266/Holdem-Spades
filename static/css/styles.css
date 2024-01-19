@@ -301,10 +301,44 @@ button p {
     margin: 10px 0;
 }
 
+body.game {
+    background-color: none;
+    background-image: url('../img/felt.png');
+}
+
+.game .header {
+    background-color: rgb(0, 0, 0, 0.3);
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+.game a {
+    color: white;
+}
+
+.game .title {
+    color: white;
+}
+
+#game_footer {
+    width: 100%;
+    display: grid;
+    color: white;
+    background-color: rgb(0, 0, 0, 0.25);
+    box-shadow: rgba(0, 0, 0, 0.05) 3px 3px 6px 0px inset, rgba(0, 0, 0, 0.08) -3px -3px 6px 1px inset;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    align-items: center;
+    height: 15vh;
+}
+
 #player_list {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 1fr;
+    gap: 3vw;
+    margin: 0 20px;
+    justify-items: center;
     align-items: start;
-    gap: 5vw;
 }
 
 .player_info {
@@ -312,15 +346,24 @@ button p {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 15px;
-    border-radius: 10px;
-    gap: 8px;
+    padding: 25px 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    gap: 20px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    background-color: rgb(0, 0, 0, 0.18);
 }
 
 .player_name {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 600;
     line-height: 1rem;
+    color:rgb(14, 48, 53);
+    padding-bottom: 5px;
+}
+
+.game .value_container {
+    color: rgb(8, 3, 66);
 }
 
 .value_container {
@@ -342,8 +385,8 @@ button p {
 }
 
 .card {
-    height: 100px;
-    width: 70px;
+    height: 110px;
+    width: 77px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     border-radius: 5px;
 }
@@ -366,7 +409,7 @@ button p {
 
 .card_front p {
     font-family: "Oswald";
-    font-size: 34px;
+    font-size: 38px;
     color: black;
     margin: 34% 17%;
 }
@@ -377,7 +420,7 @@ button p {
 
 .card_front div p {
     font-family: 'Times New Roman', Times, serif;
-    font-size: 52px;
+    font-size: 58px;
     margin-bottom: 37%;
 }
 
@@ -402,8 +445,8 @@ button p {
 
 .flip-card {
     background-color: transparent;
-    height: 100px;
-    width: 70px;
+    height: 110px;
+    width: 77px;
     perspective: 1000px;
 }
 
@@ -433,17 +476,6 @@ button p {
     transform: rotateY(180deg);
 }
 
-#game_footer {
-    width: 100%;
-    display: grid;
-    background-color: white;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-    grid-template-columns: repeat(3, 1fr);
-    justify-content: center;
-    align-items: center;
-    height: 15vh;
-}
-
 #game_info {
     display: flex;
     flex-direction: column;
@@ -462,8 +494,12 @@ button p {
     background-color: rgb(0, 100, 0, 0.3);
 }
 
-#net_change {
-    margin: 10px 0;
+.info_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
 }
 
 #choice_container {

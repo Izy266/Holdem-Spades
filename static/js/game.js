@@ -165,8 +165,6 @@ socket.on('game_info', game => {
         infoContainer.style.gridColumn = `${4 + offset}`;
         infoContainer.style.gridRow = 1;
 
-        void infoContainer.offsetHeight; 
-
         const playerInfo = infoContainer.querySelector('.player_info');
 
         if (game.live) {

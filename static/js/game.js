@@ -262,7 +262,7 @@ socket.on('game_info', game => {
             startButton.innerHTML = 'Start Game';
             choiceContainer.appendChild(startButton);
             startButton.addEventListener('click', () => {
-                socket.emit('handStart', { gameId: gameId, playerId: playerId, sessionId: sessionId });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand' });
             });
         }
         return;
@@ -412,7 +412,7 @@ socket.on('game_info', game => {
 
         gameHand = game.hand++;
         setTimeout(() => {
-            socket.emit('handStart', { gameId: gameId, playerId: playerId, sessionId: sessionId });
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand' });
         }, newGameDelay);
     }
 

@@ -80,21 +80,6 @@ def on_join(data):
     join_room(game_id)
     join_room(player_id)
 
-@socketio.on('handStart')
-def start_game(data):
-    game_id = clean(str(data['gameId']))
-    player_id = clean(str(data['playerId']))
-    session_id = clean(str(data['sessionId']))
-    game = games[game_id]
-    player_sessions = {p.id: p.session_id for p in game.players}
-
-    if len([p.id for p in game.players if p.balance]) > 1:
-        if game.hand_over() or (game.creator_id == player_id and player_sessions[player_id] == session_id and game.round < 0):
-            game.new_hand()
-            game.live = True
-
-    handle_player_action({'gameId': game_id, 'playerId': player_id, 'sessionId': session_id, 'action': 'none'})
-
 @socketio.on('playerAction')
 def handle_player_action(data):
     action = clean(str(data['action']))
@@ -108,14 +93,24 @@ def handle_player_action(data):
     if session_id != player_sessions[player_id]:
         return
     
-    if player_id == cur_player.id:
-        if action == 'check':
-            game.bet()
-        elif action == 'bet':
-            amount = data.get('amount')
-            game.bet(int(amount))
-        elif action == 'fold':
-            game.fold()
+    if action in ['new_hand', 'check', 'bet', 'fold']:
+        if player_id == cur_player.id: 
+            if action == 'check':
+                game.bet()
+            elif action == 'bet':
+                amount = data.get('amount')
+                game.bet(int(amount))
+            elif action == 'fold':
+                game.fold()
+        
+        if action == 'new_hand' and len([p.id for p in game.players if p.balance]) > 1:
+            if game.hand_over() or (game.creator_id == player_id and player_sessions[player_id] == session_id and game.round < 0):
+                game.new_hand()
+                game.live = True
+
+        # # reset timer
+        # if not game.hand_over():
+        #     # if timer > 0 
 
     round_over = game.round_over()
     if round_over:

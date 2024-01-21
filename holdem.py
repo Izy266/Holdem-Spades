@@ -30,12 +30,15 @@ class TexasHoldem:
         self.buy_in = buy_in
         self.small_blind = small_blind
         self.big_blind = big_blind
+        self.min_raise = big_blind
         self.current_bet = 0
         self.round = -1
+        self.hand = -1
         self.creator_id = None
         self.last_better_id = None
         self.hands = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush']
         self.log = []
+        self.last_move_time = None
 
     def add_player(self, player):
         self.players.append(player)
@@ -57,10 +60,11 @@ class TexasHoldem:
         return self.players[self.turn]
 
     def place_cards(self):
-        if self.round == 1:
-            self.community_cards = [self.deck.pop() for _ in range(3)]
-        elif len(self.community_cards) < 5:
-            self.community_cards.append(self.deck.pop())
+        if not self.hand_over():
+            if self.round == 1:
+                self.community_cards = [self.deck.pop() for _ in range(3)]
+            elif len(self.community_cards) < 5:
+                self.community_cards.append(self.deck.pop())
 
     def round_over(self):
         players_live = [player for player in self.players if player.live]
@@ -93,12 +97,14 @@ class TexasHoldem:
         
         self.turn = (self.button + 1) % len(self.players)
         self.current_bet = 0
+        self.min_raise = self.big_blind
         self.round += 1
         self.place_cards()
         self.update_scores()
 
     def new_hand(self):
         self.round = 0
+        self.hand += 1
         self.pot = 0
         self.community_cards = []
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
@@ -156,7 +162,9 @@ class TexasHoldem:
 
         if amount:
             self.last_better_id = player.id
+            self.min_raise = max(self.min_raise, amount - self.current_bet)
             self.current_bet = amount + player.bets[self.round]
+            
             for p in self.players:
                 p.moved = False
         else:

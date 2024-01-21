@@ -1,7 +1,8 @@
 from flask import Flask, request, render_template, redirect, url_for
 from flask_socketio import SocketIO, join_room
-import secrets, uuid, json
+from bleach import clean
 from holdem import *
+import secrets, uuid, json, time
 
 # implement database instead of dict
 
@@ -31,7 +32,7 @@ def play(game_id):
 
 @app.route('/create_game', methods=['POST'])
 def create_game():
-    player_name = request.form['player_name']
+    player_name = clean(str(request.form['player_name']))
     game = TexasHoldem(int(request.form['buy_in']), int(request.form['small_blind']), int(request.form['big_blind']))
     game_id = str(uuid.uuid4())
     games[game_id] = game
@@ -51,7 +52,7 @@ def add_player(game_id):
     player_id = request.cookies.get('player_id')
     game = games[game_id]
 
-    player_name = request.form['player_name']
+    player_name = clean(str(request.form['player_name']))
     player_id = secrets.token_hex(16)
     session_id = secrets.token_hex(16)
     player = Player(player_name, player_id, game.buy_in)
@@ -65,9 +66,9 @@ def add_player(game_id):
 
 @socketio.on('join')
 def on_join(data):
-    game_id = data['gameId']
-    player_id = data['playerId']
-    session_id = data['sessionId']
+    game_id = clean(str(data['gameId']))
+    player_id = clean(str(data['playerId']))
+    session_id = clean(str(data['sessionId']))
     game = games[game_id]
     player_sessions = {p.id: p.session_id for p in game.players}
 
@@ -81,25 +82,25 @@ def on_join(data):
 
 @socketio.on('handStart')
 def start_game(data):
-    game_id = data['gameId']
-    player_id = data['playerId']
-    session_id = data['sessionId']
+    game_id = clean(str(data['gameId']))
+    player_id = clean(str(data['playerId']))
+    session_id = clean(str(data['sessionId']))
     game = games[game_id]
     player_sessions = {p.id: p.session_id for p in game.players}
 
     if len([p.id for p in game.players if p.balance]) > 1:
-        if game.creator_id == player_id and player_sessions[player_id] == session_id and game.round < 0:
+        if game.hand_over() or (game.creator_id == player_id and player_sessions[player_id] == session_id and game.round < 0):
             game.new_hand()
             game.live = True
-        elif game.hand_over():
-            game.new_hand()
+
+    handle_player_action({'gameId': game_id, 'playerId': player_id, 'sessionId': session_id, 'action': 'none'})
 
 @socketio.on('playerAction')
 def handle_player_action(data):
-    action = data['action']
-    game_id = data['gameId']
-    player_id = data['playerId']
-    session_id = data['sessionId']
+    action = clean(str(data['action']))
+    game_id = clean(str(data['gameId']))
+    player_id = clean(str(data['playerId']))
+    session_id = clean(str(data['sessionId']))
     game = games[game_id]
     player_sessions = {p.id: p.session_id for p in game.players}
     cur_player = game.cur_player()
@@ -148,7 +149,7 @@ def handle_player_action(data):
         players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round] if game.round < len(p.bets) else 0, 'current': p == game.cur_player(), 'next_move': p.next_move if p.id == player.id else None, 'hand': p.hand if (p.show or p.id == player.id) else [None, None] if p.hand else [], 'best_hand': p.best_hand if p.id == player.id else [], 'score': p.score if (p.show or p.id == player.id) else [-1], 'profit': p.profit, 'show': p.show} for p in game.players])
         socketio.emit('player_list', players_json, room=player.id)
 
-    socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_raise': game.big_blind, 'hand_over': hand_over}, room=game_id)
+    socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_raise': game.min_raise, 'big_blind': game.big_blind, 'hand': game.hand, 'hand_over': hand_over}, room=game_id)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

@@ -19,6 +19,7 @@ class Player:
         
 class TexasHoldem:
     def __init__(self, buy_in, small_blind, big_blind):
+        self.id = None
         self.live = False
         self.players = []
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
@@ -38,7 +39,10 @@ class TexasHoldem:
         self.last_better_id = None
         self.hands = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush']
         self.log = []
-        self.last_move_time = None
+        self.time_per_move = 15
+        self.move_time_start = None
+        self.move_time_remaining = None
+        self.timer_thread = None
 
     def add_player(self, player):
         self.players.append(player)

@@ -90,6 +90,7 @@ function makeCardFlip(card, delay) {
 
 function makePlayer(player) {
     const infoContainer = document.createElement('div');
+    const playerInfoContainer = document.createElement('div');
     const playerInfo = document.createElement('div');
     const name = document.createElement('div');
     const hand = document.createElement('div');
@@ -97,6 +98,7 @@ function makePlayer(player) {
 
     infoContainer.setAttribute('id', player.id);
     infoContainer.setAttribute('class', 'info_container');
+    playerInfoContainer.setAttribute('class', 'player_info_container');
     playerInfo.setAttribute('class', 'player_info');
     name.setAttribute('class', 'player_name');
     hand.setAttribute('class', 'player_hand');
@@ -105,7 +107,8 @@ function makePlayer(player) {
     playerInfo.appendChild(name);
     playerInfo.appendChild(hand);
     playerInfo.appendChild(balance);
-    infoContainer.appendChild(playerInfo);
+    playerInfoContainer.appendChild(playerInfo);
+    infoContainer.appendChild(playerInfoContainer);
 
     name.innerHTML = player.name;
     balance.innerHTML = `$${player.balance}`;
@@ -166,6 +169,7 @@ socket.on('game_info', game => {
         let playerColumn = 4 + offset
         infoContainer.style.gridColumn = `${playerColumn}`;
 
+        const playerInfoContainer = infoContainer.querySelector('.player_info_container');
         const playerInfo = infoContainer.querySelector('.player_info');
         if (index == thisPlayerIndex) {
             playerInfo.classList.add('current');
@@ -193,16 +197,23 @@ socket.on('game_info', game => {
                 });
             }
 
-            // if (player.current && !game.hand_over && !autoCheck) {
-            //     hand.style.backgroundColor = 'rgb(255,0,0,0.3)';
-            //     hand.style.boxShadow = '0px 0px 40px 30px rgb(255,0,0,0.3)';
-            // } else if (player.profit > 0) {
-            //     hand.style.backgroundColor = 'rgb(0,0,255,0.3)';
-            //     hand.style.boxShadow = '0px 0px 40px 30px rgb(0,0,255,0.3)';
-            // } else {
-            //     hand.style.backgroundColor = 'rgb(0,0,0,0)';
-            //     hand.style.boxShadow = 'none';
-            // }
+            if (player.current && !game.hand_over && !autoCheck) {
+                let draw = playerInfoContainer.querySelector('.draw');
+                if (draw == null || game.time_left == game.time_per_move) {
+                    playerInfo.classList.remove('draw');
+                    playerInfo.offsetWidth;
+                    playerInfo.classList.add('draw');
+                    let draw = playerInfoContainer.querySelector('.draw');
+                    draw.style.setProperty('--time_left', `${game.time_left}s`)
+                    draw.style.animationPlayState = "running";
+                }
+                if (thisPlayer.id == turnPlayer.id) {
+                    playerInfoContainer.classList.add('flash');
+                }
+            } else {
+                playerInfo.classList.remove('draw');
+                playerInfoContainer.classList.remove('flash');
+            }
 
             if (netChange == null) {
                 if ((player.in_pot > 0 && !game.hand_over) || player.profit > 0) {
@@ -214,12 +225,12 @@ socket.on('game_info', game => {
                 infoContainer.removeChild(netChange);
             }
 
-            if (player.in_pot > 0) {
+            if (player.in_pot > 0 && netChange != null) {
                 netChange.innerHTML = `-$${player.in_pot}`;
                 netChange.style.backgroundColor = 'rgb(255, 0, 0, 0.4)';
             }
 
-            if (player.profit > 0) {
+            if (player.profit > 0 && netChange != null) {
                 netChange.innerHTML = `+$${player.profit}`;
                 netChange.style.backgroundColor = 'rgb(0, 100, 0, 0.5)';
             }
@@ -240,12 +251,12 @@ socket.on('game_info', game => {
             if (!player.live) {
                 playerInfo.style.opacity = '0.2';
                 if (player.id == playerId) {
-                    playerInfo.style.opacity = '0.2';
+                    playerInfoContainer.style.opacity = '0.2';
                 }
             } else {
                 playerInfo.style.opacity = '1';
                 if (player.id == playerId) {
-                    playerInfo.style.opacity = '1';
+                    playerInfoContainer.style.opacity = '1';
                 }
             }
         }
@@ -290,7 +301,6 @@ socket.on('game_info', game => {
     const mainChoices = choiceContainer.querySelector('#main_choices');
 
     const callAmount = game.current_bet - thisPlayer.in_pot;
-    console.log(game.min_raise);
     const minRaise = game.min_raise + callAmount;
 
     let raiseAmount = minRaise;

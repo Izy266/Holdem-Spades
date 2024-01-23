@@ -149,7 +149,7 @@ button p {
 }
 
 .green_button {
-    background-color:  rgb(0, 163, 84);
+    background-color: rgb(0, 163, 84);
 }
 
 .blue_button:hover {
@@ -346,17 +346,28 @@ body.game {
     align-items: end;
 }
 
+.player_info_container {
+    margin-top: 20px;
+    padding: 7px;
+    padding-top: 0;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    background-color: rgb(0, 0, 0, 0.18);
+    -webkit-animation-duration: 1.5s;
+    animation-duration: 1.5s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+}
+
 .player_info {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     padding: 25px 20px;
-    margin-top: 20px;
     border-radius: 5px;
     gap: 15px;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-    background-color: rgb(0, 0, 0, 0.18);
 }
 
 .player_info.current {
@@ -371,7 +382,6 @@ body.game {
     color: rgb(14, 48, 53);
     padding-bottom: 5px;
 }
-
 
 .game .value_container {
     color: rgb(8, 3, 66);
@@ -529,6 +539,7 @@ body.game {
 
 .flash {
     animation-name: flash;
+
 }
 
 #choice_container {
@@ -609,14 +620,121 @@ body.game {
     width: 43px;
 }
 
+@keyframes bottomright {
+    0% {
+        width: 0;
+        height: 0;
+        padding-top: 0;
+        visibility: visible;
+    }
+
+    25% {
+        width: 100%;
+        height: 0;
+        padding-top: 0;
+        visibility: visible;
+    }
+
+    50% {
+        height: 100%;
+        width: 100%;
+        visibility: visible;
+    }
+
+    75% {
+        visibility: visible;
+    }
+
+    100% {
+        height: 100%;
+        visibility: visible;
+    }
+}
+
+@keyframes topleft {
+    0% {
+        width: 0;
+        height: 0;
+        padding-bottom: 0;
+        visibility: hidden;
+    }
+
+    25% {
+        width: 0;
+        height: 0;
+        padding-bottom: 0;
+        visibility: hidden;
+    }
+
+    50% {
+        width: 0;
+        height: 0;
+        padding-bottom: 0;
+        visibility: hidden;
+    }
+
+    75% {
+        width: 100%;
+        height: 0;
+        padding-bottom: 0;
+        visibility: visible;
+    }
+
+    100% {
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.draw {
+    position: relative;
+}
+
+.draw:after {
+    content: "";
+    position: absolute;
+    bottom: -7px;
+    padding-left: 7px;
+    right: -7px;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border-bottom: 7px solid rgb(185, 58, 58);
+    border-left: 7px solid rgb(185, 58, 58);
+    animation: bottomright var(--time_left, 1) ease-in forwards;
+    visibility: hidden;
+}
+
+.draw:before {
+    content: "";
+    position: absolute;
+    top: -0.5px;
+    left: -7px;
+    padding-right: 7px;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border-top: 7px solid rgb(185, 58, 58);
+    border-right: 7px solid rgb(185, 58, 58);
+    animation: topleft var(--time_left, 1) ease-in forwards;
+    visibility: hidden;
+}
+
 @keyframes flash {
-    0%, 50%, 100% {
-       opacity: 1;
+
+    0%,
+    50%,
+    100% {
+        opacity: 1;
     }
-    25%, 75% {
-       opacity: 0;
+
+    25%,
+    75% {
+        opacity: 0;
     }
- }
+}
 
 @media (max-width: 600px) {
     h1 {

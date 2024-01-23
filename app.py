@@ -2,14 +2,22 @@ from flask import Flask, request, render_template, redirect, url_for
 from flask_socketio import SocketIO, join_room
 from bleach import clean
 from holdem import *
-import secrets, uuid, json, time
+import secrets, uuid, json, time, threading
 
-# implement database instead of dict
+def run_timer(game):
+    while not game.hand_over():
+        time_now = time.time()
+        time_elapsed = time_now - game.move_time_start
+        game.move_time_remaining = game.time_per_move - time_elapsed
+        if time_elapsed > game.time_per_move:
+            game.move_time_start = time_now
+            handle_player_action({'gameId': game.id, 'playerId': game.cur_player().id, 'sessionId': game.cur_player().session_id, 'action': 'fold'})
+        time.sleep(0.1)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(32)
 socketio = SocketIO(app)
-games = {}
+games = {} # implement database instead of dict
 
 @app.route('/')
 def index():
@@ -42,6 +50,7 @@ def create_game():
     player.session_id = session_id
     game.add_player(player)
     game.creator_id = player_id
+    game.id = game_id
     response = redirect(url_for('play', game_id=game_id))
     response.set_cookie('player_id', player_id)
     response.set_cookie('session_id', session_id)
@@ -92,25 +101,32 @@ def handle_player_action(data):
 
     if session_id != player_sessions[player_id]:
         return
-    
-    if action in ['new_hand', 'check', 'bet', 'fold']:
-        if player_id == cur_player.id: 
-            if action == 'check':
-                game.bet()
-            elif action == 'bet':
-                amount = data.get('amount')
-                game.bet(int(amount))
-            elif action == 'fold':
-                game.fold()
-        
-        if action == 'new_hand' and len([p.id for p in game.players if p.balance]) > 1:
-            if game.hand_over() or (game.creator_id == player_id and player_sessions[player_id] == session_id and game.round < 0):
-                game.new_hand()
-                game.live = True
 
-        # # reset timer
-        # if not game.hand_over():
-        #     # if timer > 0 
+    def set_timer():
+        game.move_time_start = time.time()
+        game.move_time_remaining = game.time_per_move
+
+        if game.timer_thread is None or not game.timer_thread.is_alive():
+            game.timer_thread = threading.Thread(target=run_timer, args=(game,))
+            game.timer_thread.start()
+            
+    if player_id == cur_player.id: 
+        if action == 'check':
+            game.bet()
+            set_timer()
+        elif action == 'bet':
+            amount = data.get('amount')
+            game.bet(int(amount))
+            set_timer()
+        elif action == 'fold':
+            game.fold()
+            set_timer()
+
+    if action == 'new_hand' and len([p.id for p in game.players if p.balance]) > 1:
+        if game.hand_over() or (game.creator_id == player_id and player_sessions[player_id] == session_id and game.round < 0):
+            game.new_hand()
+            game.live = True
+            set_timer()
 
     round_over = game.round_over()
     if round_over:
@@ -138,13 +154,13 @@ def handle_player_action(data):
         if action in ['check', 'fold'] and player.id == player_id:       
             player.next_move = None if player.next_move == action else action
         
-        if action == 'bet' or player.id == cur_player.id:
+        if player.id == cur_player.id:
             player.next_move = None
 
         players_json = json.dumps([{'name': p.name, 'id': p.id, 'balance': p.balance, 'live': p.live, 'in_pot': p.bets[game.round] if game.round < len(p.bets) else 0, 'current': p == game.cur_player(), 'next_move': p.next_move if p.id == player.id else None, 'hand': p.hand if (p.show or p.id == player.id) else [None, None] if p.hand else [], 'best_hand': p.best_hand if p.id == player.id else [], 'score': p.score if (p.show or p.id == player.id) else [-1], 'profit': p.profit, 'show': p.show} for p in game.players])
         socketio.emit('player_list', players_json, room=player.id)
 
-    socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_raise': game.min_raise, 'big_blind': game.big_blind, 'hand': game.hand, 'hand_over': hand_over}, room=game_id)
+    socketio.emit('game_info', {'live': game.live, 'pot': game.pot, 'cards': game.community_cards, 'current_bet': game.current_bet, 'creator_id': game.creator_id, 'min_raise': game.min_raise, 'big_blind': game.big_blind, 'hand': game.hand, 'hand_over': hand_over, 'time_per_move': game.time_per_move, 'time_left': game.move_time_remaining}, room=game_id)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

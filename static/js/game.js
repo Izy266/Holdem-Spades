@@ -172,7 +172,7 @@ socket.on('game_info', game => {
         const playerInfoContainer = infoContainer.querySelector('.player_info_container');
         const playerInfo = infoContainer.querySelector('.player_info');
         if (index == thisPlayerIndex) {
-            playerInfo.classList.add('current');
+            playerInfo.classList.add('self');
         }
 
         if (game.live) {
@@ -201,6 +201,7 @@ socket.on('game_info', game => {
                 let draw = playerInfoContainer.querySelector('.draw');
                 if (draw == null || game.time_left == game.time_per_move) {
                     playerInfo.classList.remove('draw');
+                    playerInfoContainer.classList.add('turn');
                     playerInfo.offsetWidth;
                     playerInfo.classList.add('draw');
                     let draw = playerInfoContainer.querySelector('.draw');
@@ -212,6 +213,7 @@ socket.on('game_info', game => {
                 }
             } else {
                 playerInfo.classList.remove('draw');
+                playerInfoContainer.classList.remove('turn');
                 playerInfoContainer.classList.remove('flash');
             }
 
@@ -417,6 +419,7 @@ socket.on('game_info', game => {
             });
 
         } else {
+            choiceContainer.classList.remove('flash');
             choiceContainer.innerHTML = '';
         }
 

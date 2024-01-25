@@ -22,6 +22,11 @@ h2 {
     font-weight: 800;
 }
 
+h3 {
+    margin:0;
+    padding:0;
+}
+
 p {
     margin: 0 15px;
     font-size: 21px;
@@ -72,13 +77,16 @@ button p {
     display: flex;
     height: 100%;
     width: 200px;
+    gap: 15px;
     align-items: center;
-    margin: 15px;
+    margin: 20px;
 }
 
 .title {
-    font-family: "Style Script";
-    font-size: 26px;
+    font-family: "Jost";
+    font-size: 22px;
+    letter-spacing: -1px;
+    font-weight: 700;
     margin-top: 3px;
     color: black;
     white-space: nowrap;
@@ -179,8 +187,8 @@ button p {
 }
 
 #logo_img {
-    max-height: 45%;
-    margin-right: 20px;
+    height: 50%;
+    /* margin-right: 20px; */
 }
 
 .main {
@@ -330,6 +338,7 @@ body.game {
     background-color: rgb(0, 0, 0, 0.25);
     box-shadow: rgba(0, 0, 0, 0.05) 3px 3px 6px 0px inset, rgba(0, 0, 0, 0.08) -3px -3px 6px 1px inset;
     grid-template-columns: repeat(3, 1fr);
+    
     justify-content: center;
     align-items: center;
     height: 30vh;
@@ -536,9 +545,13 @@ body.game {
 }
 
 .player_score {
+    display: flex;
+    justify-content: center;
     font-weight: 800;
-    width: max-content;
-    margin: auto;
+}
+
+#game_footer .player_score {
+    margin: 0;
 }
 
 .flash {
@@ -580,16 +593,31 @@ body.game {
     gap: 5px;
 }
 
-#best_hand {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    justify-content: center;
+.footer_item {
+    display:grid;
+    grid-template-rows: auto 100px auto;
+    justify-content: start;
     align-items: center;
-    gap: 5px;
+    margin: 15px;
+
+    border-radius: 10px;
+    border: 1px solid rgb(0,0,0,0.2);
 }
 
-#best_hand_cards {
+#best_hand {
+    justify-content: center;
+}
+
+#best_hand h3 {
+    justify-content: center;
+}
+
+.footer_item h3 {
+    display: flex;
+    justify-content: start;
+}
+
+.best_hand_cards {
     display: flex;
     width: 100%;
     gap: 1vw;
@@ -597,8 +625,8 @@ body.game {
 }
 
 #best_hand .card {
-    height: 65px;
-    width: 43px;
+    height: 86px;
+    width: 57px;
     border-radius: 5px;
 }
 
@@ -612,16 +640,16 @@ body.game {
 }
 
 #best_hand .card_front p {
-    font-size: 24px;
+    font-size: 32px;
 }
 
 #best_hand .card_front div p {
-    font-size: 36px;
+    font-size: 47px;
 }
 
 #best_hand .flip-card {
-    height: 65px;
-    width: 43px;
+    height: 86px;
+    width: 57px;
 }
 
 @keyframes bottomright {

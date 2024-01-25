@@ -13,9 +13,11 @@ class Player:
         self.best_hand = []
         self.moved = False
         self.live = True
+        self.in_game = True
         self.show = False
         self.profit = 0
         self.next_move = None
+        self.afk = 0
         
 class TexasHoldem:
     def __init__(self, buy_in, small_blind, big_blind):
@@ -39,13 +41,16 @@ class TexasHoldem:
         self.last_better_id = None
         self.hands = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush']
         self.log = []
-        self.time_per_move = 15
+        self.time_per_move = 5
         self.move_time_start = None
         self.move_time_remaining = None
         self.timer_thread = None
 
     def add_player(self, player):
         self.players.append(player)
+    
+    def remove_player(self, player_id):
+        self.players = [p for p in self.players if p.id != player_id]
     
     def get_player(self, name = None, id = None):
         in_game = [p.id for p in self.players] if id else [p.name for p in self.players]
@@ -114,7 +119,8 @@ class TexasHoldem:
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
         random.shuffle(self.deck)
         for player in self.players:
-            player.hand = [self.deck.pop(), self.deck.pop()]
+            player.live = player.balance > 0 and player.afk < 3
+            player.hand = [self.deck.pop(), self.deck.pop()] if player.live else []
             player.best_hand = player.hand
             player.score = [-1]
             player.bets = [0 for _ in range(4)]
@@ -122,11 +128,16 @@ class TexasHoldem:
             player.next_move = None
             player.moved = False
             player.show = False
-            player.live = player.balance > 0
             self.score(player)
+            if not player.live:
+                if player.afk > 5:
+                    player.in_game = False
+                player.afk += 1
         
+        self.players = [p for p in self.players if p.in_game]
+
         self.button = self.get_live_ind(self.button + 1)
-        self.turn = self.get_live_ind(self.button + 1 if len(self.players) > 2 else self.button)
+        self.turn = self.get_live_ind(self.button + 1 if len([p for p in self.players if p.live]) > 2 else self.button)
         self.bet(self.small_blind, blind = True)
         self.bet(self.big_blind, blind = True)
 
@@ -152,7 +163,7 @@ class TexasHoldem:
             scores = [score for score in scores if score != max_score]
             winners = [p for p in self.players if p.live and p.score == max_score]
             while winners:
-                winners[-1].show = True
+                winners[-1].show = len([p for p in self.players if p.live]) > 1
                 profit = min(max_win[winners[0].id], self.pot//len(winners))
                 winners[-1].balance += profit
                 winners[-1].profit = profit

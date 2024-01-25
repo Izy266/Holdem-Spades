@@ -137,9 +137,11 @@ socket.on('connect', () => {
 
 socket.on('player_list', playerData => {
     players = JSON.parse(playerData);
+    players = players.filter(player => player.in_game);
 });
 
 socket.on('game_info', game => {
+    const gameButtonContainer = document.getElementById('game_button_container');
     const playerList = document.getElementById('player_list');
     const pot = document.getElementById('game_pot');
     const choiceContainer = document.getElementById('choice_container');
@@ -151,10 +153,38 @@ socket.on('game_info', game => {
     const midPoint = Math.floor(totalPlayers / 2);
     const turnPlayer = players.find(player => player.current);
     const autoCheck = !game.hand_over && (turnPlayer.balance == 0 || (game.current_bet == 0 && players.filter(p => p.live && p.balance > 0).length < 2))
+    const playerListIds = Array.from(playerList.children).map(child => child.id);
+    const playerIds = players.map(player => player.id);
 
     choiceContainer.innerHTML = '';
-    bestHand.innerHTML = '';
+    gameButtonContainer.innerHTML = '';
     pot.innerHTML = `Pot: $${game.pot}`;
+
+    for (let i = 0; i < playerListIds.length; i++) {
+        if (!playerIds.includes(playerListIds[i])) {
+            let playerRemove = document.getElementById(playerListIds[i]);
+            playerRemove.remove();
+        }
+    }
+
+    if (thisPlayer.afk > 2) {
+        const gameButton = document.createElement('button');
+        gameButton.setAttribute('class', 'common_button green_button');
+        gameButton.innerHTML = "Join Game";
+        gameButtonContainer.appendChild(gameButton);
+        gameButton.addEventListener("click", () => {
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'join' });
+        });    
+    } else {
+        const gameButton = document.createElement('button');
+        gameButton.setAttribute('class', 'common_button red_button');
+        gameButton.innerHTML = "Leave Game";
+        gameButtonContainer.appendChild(gameButton);
+        gameButton.addEventListener("click", () => {
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'leave' });
+            window.location.href = '/';
+        }); 
+    }
 
     players.forEach((player, index) => {
         let infoContainer = document.getElementById(player.id);
@@ -252,14 +282,8 @@ socket.on('game_info', game => {
 
             if (!player.live) {
                 playerInfo.style.opacity = '0.2';
-                if (player.id == playerId) {
-                    playerInfoContainer.style.opacity = '0.2';
-                }
             } else {
                 playerInfo.style.opacity = '1';
-                if (player.id == playerId) {
-                    playerInfoContainer.style.opacity = '1';
-                }
             }
         }
     });
@@ -286,12 +310,6 @@ socket.on('game_info', game => {
         gameHand = game.hand;
     }
 
-    if (choiceContainer.children.length == 0) {
-        const mainChoices = document.createElement('div');
-        mainChoices.setAttribute('id', 'main_choices');
-        choiceContainer.appendChild(mainChoices);
-    }
-
     let delay = 0;
     game.cards.forEach(card => {
         if (!document.getElementById(card)) {
@@ -299,6 +317,12 @@ socket.on('game_info', game => {
             comCards.appendChild(makeCardFlip(card, delay));
         }
     });
+
+    if (choiceContainer.children.length == 0) {
+        const mainChoices = document.createElement('div');
+        mainChoices.setAttribute('id', 'main_choices');
+        choiceContainer.appendChild(mainChoices);
+    }
 
     const mainChoices = choiceContainer.querySelector('#main_choices');
 
@@ -311,8 +335,8 @@ socket.on('game_info', game => {
     const foldButton = document.createElement('button');
     const raiseButton = document.createElement('button');
     const raiseSlider = document.createElement('input');
-    const bestHandScore = document.createElement('div');
-    const bestHandCards = document.createElement('div');
+    const bestHandScore = bestHand.querySelector('.player_score');
+    const bestHandCards = bestHand.querySelector('.best_hand_cards');
 
     callButton.setAttribute('class', 'common_button blue_button');
     callButton.setAttribute('id', 'call_button');
@@ -325,8 +349,6 @@ socket.on('game_info', game => {
     raiseSlider.setAttribute('value', minRaise);
     raiseSlider.setAttribute('step', Math.floor(game.big_blind / 2));
     raiseSlider.setAttribute('id', 'raise_slider');
-    bestHandScore.setAttribute('class', 'player_score');
-    bestHandCards.setAttribute('id', 'best_hand_cards');
 
     mainChoices.appendChild(callButton);
     mainChoices.appendChild(foldButton);
@@ -401,7 +423,15 @@ socket.on('game_info', game => {
             choiceContainer.appendChild(raiseSlider);
             choiceContainer.classList.add('flash');
         }
-    } else {
+    } 
+    
+    bestHandScore.innerHTML = `${scoreRanking[thisPlayer.score[0]]}`;
+    bestHandCards.innerHTML = "";
+    for (let i = 0; i < thisPlayer.best_hand.length; i++) {
+        bestHandCards.appendChild(makeCardFront(thisPlayer.best_hand[i]));
+    }
+
+    if (game.hand_over) {
         const newGameDelay = 8000;
 
         if (!thisPlayer.show && thisPlayer.live) {
@@ -426,14 +456,10 @@ socket.on('game_info', game => {
         gameHand = game.hand++;
         setTimeout(() => {
             socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand' });
+            if (thisPlayer.afk > 5) {
+                window.location.href = '/';
+            }
         }, newGameDelay);
     }
-
-    bestHandScore.innerHTML = `${scoreRanking[thisPlayer.score[0]]}`;
-    for (let i = 0; i < thisPlayer.best_hand.length; i++) {
-        bestHandCards.appendChild(makeCardFront(thisPlayer.best_hand[i]));
-    }
-    bestHand.appendChild(bestHandScore);
-    bestHand.appendChild(bestHandCards);
 });
 

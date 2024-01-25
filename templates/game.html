@@ -7,10 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;0,800;1,400;1,700&family=Inter:wght@400;500;600;800&family=Oswald:wght@200;300;400&family=Style+Script&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;0,800;1,400;1,700&family=Inter:wght@400;500;600;800&family=Jost:wght@700;900&family=Oswald:wght@200;300;400&display=swap"
         rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.min.js"></script>
     <script src="../static/js/game.js"></script>
+    <script src="../static/js/chat.js"></script>
     <link rel="stylesheet" href="../static/css/styles.css">
     <title>Holdem Haven Game</title>
 </head>
@@ -23,7 +25,7 @@
             </a>
             <div class="title">Holdem Spades</div>
         </div>
-
+        <div id="game_button_container"></div>
         <div class="menu">
             <div class="menu_items">
                 <a href="#">How to Play</a>
@@ -42,11 +44,23 @@
         <div id="choice_container"></div>
     </div>
     <div id="game_footer">
-        <div id="chat"></div>
-        <div id="best_hand"></div>
-        <div id="game_log"></div>
+        <div class="footer_item" id="chat">
+            <h3>Chat</h3>
+            <div id="chat_box"></div>
+            <div id="input_area">
+                <input type="text" id="chat_input" placeholder="Type your message here...">
+            </div>
+        </div>
+        <div class="footer_item" id="best_hand">
+            <h3>Best Hand</h3>
+            <div class="best_hand_cards"></div>
+            <div class="player_score"></div>
+        </div>
+        <div class="footer_item" id="game_log">
+            <h3>Game Log</h3>
+            <div id="game_log_box"></div>
+        </div>
     </div>
 </body>
 
 </html>
-

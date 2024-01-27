@@ -1,14 +1,11 @@
 function getCookie(name) {
     let cookieArr = document.cookie.split(';');
-
     for (let i = 0; i < cookieArr.length; i++) {
         let cookiePair = cookieArr[i].split('=');
-
         if (name == cookiePair[0].trim()) {
             return decodeURIComponent(cookiePair[1]);
         }
     }
-
     return null;
 }
 
@@ -129,6 +126,7 @@ socket.on('connect', () => {
     socket.emit('join', { gameId: gameId, playerId: playerId, sessionId: sessionId }, (response) => {
         if (!response) {
             socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'none' });
+            socket.emit('playerChat', { gameId: gameId, playerId: playerId, sessionId: sessionId, input: '', new: true })
         } else {
             window.location.href = '/join/' + response.gameId;
         }
@@ -174,7 +172,7 @@ socket.on('game_info', game => {
         gameButtonContainer.appendChild(gameButton);
         gameButton.addEventListener("click", () => {
             socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'join' });
-        });    
+        });
     } else {
         const gameButton = document.createElement('button');
         gameButton.setAttribute('class', 'common_button red_button');
@@ -183,7 +181,7 @@ socket.on('game_info', game => {
         gameButton.addEventListener("click", () => {
             socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'leave' });
             window.location.href = '/';
-        }); 
+        });
     }
 
     players.forEach((player, index) => {
@@ -318,140 +316,143 @@ socket.on('game_info', game => {
         }
     });
 
-    if (choiceContainer.children.length == 0) {
-        const mainChoices = document.createElement('div');
-        mainChoices.setAttribute('id', 'main_choices');
-        choiceContainer.appendChild(mainChoices);
-    }
+    if (thisPlayer.live) {
+        if (choiceContainer.children.length == 0) {
+            const mainChoices = document.createElement('div');
+            mainChoices.setAttribute('id', 'main_choices');
+            choiceContainer.appendChild(mainChoices);
+        }
 
-    const mainChoices = choiceContainer.querySelector('#main_choices');
+        const mainChoices = choiceContainer.querySelector('#main_choices');
 
-    const callAmount = game.current_bet - thisPlayer.in_pot;
-    const minRaise = game.min_raise + callAmount;
+        const callAmount = game.current_bet - thisPlayer.in_pot;
+        const minRaise = game.min_raise + callAmount;
 
-    let raiseAmount = minRaise;
+        let raiseAmount = minRaise;
 
-    const callButton = document.createElement('button');
-    const foldButton = document.createElement('button');
-    const raiseButton = document.createElement('button');
-    const raiseSlider = document.createElement('input');
-    const bestHandScore = bestHand.querySelector('.player_score');
-    const bestHandCards = bestHand.querySelector('.best_hand_cards');
+        const callButton = document.createElement('button');
+        const foldButton = document.createElement('button');
+        const raiseButton = document.createElement('button');
+        const raiseSlider = document.createElement('input');
+        const bestHandScore = bestHand.querySelector('.player_score');
+        const bestHandCards = bestHand.querySelector('.best_hand_cards');
 
-    callButton.setAttribute('class', 'common_button blue_button');
-    callButton.setAttribute('id', 'call_button');
-    foldButton.setAttribute('class', 'common_button red_button');
-    foldButton.setAttribute('id', 'fold_button');
-    raiseButton.setAttribute('class', 'common_button green_button');
-    raiseSlider.setAttribute('type', 'range');
-    raiseSlider.setAttribute('max', thisPlayer.balance);
-    raiseSlider.setAttribute('min', minRaise);
-    raiseSlider.setAttribute('value', minRaise);
-    raiseSlider.setAttribute('step', Math.floor(game.big_blind / 2));
-    raiseSlider.setAttribute('id', 'raise_slider');
+        callButton.setAttribute('class', 'common_button blue_button');
+        callButton.setAttribute('id', 'call_button');
+        foldButton.setAttribute('class', 'common_button red_button');
+        foldButton.setAttribute('id', 'fold_button');
+        raiseButton.setAttribute('class', 'common_button green_button');
+        raiseSlider.setAttribute('type', 'range');
+        raiseSlider.setAttribute('max', thisPlayer.balance);
+        raiseSlider.setAttribute('min', minRaise);
+        raiseSlider.setAttribute('value', minRaise);
+        raiseSlider.setAttribute('step', Math.floor(game.big_blind / 2));
+        raiseSlider.setAttribute('id', 'raise_slider');
 
-    mainChoices.appendChild(callButton);
-    mainChoices.appendChild(foldButton);
+        mainChoices.appendChild(callButton);
+        mainChoices.appendChild(foldButton);
 
-    if (thisPlayer.next_move != null) {
-        if (thisPlayer.next_move == 'check') {
-            callButton.classList.add('active');
-            foldButton.classList.remove('active');
+        bestHandScore.innerHTML = `${scoreRanking[thisPlayer.score[0]]}`;
+        bestHandCards.innerHTML = "";
+
+        for (let i = 0; i < thisPlayer.best_hand.length; i++) {
+            bestHandCards.appendChild(makeCardFront(thisPlayer.best_hand[i]));
+        }
+
+        if (thisPlayer.next_move != null) {
+            if (thisPlayer.next_move == 'check') {
+                callButton.classList.add('active');
+                foldButton.classList.remove('active');
+            } else {
+                foldButton.classList.add('active');
+                callButton.classList.remove('active');
+            }
         } else {
-            foldButton.classList.add('active');
             callButton.classList.remove('active');
-        }
-    } else {
-        callButton.classList.remove('active');
-        foldButton.classList.remove('active');
-    }
-
-    if (autoCheck) {
-        choiceContainer.innerHTML = '';
-        if (playerId == turnPlayer.id) {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
-        }
-    } else if (!game.hand_over && playerId == turnPlayer.id && turnPlayer.next_move != null) {
-        if (turnPlayer.next_move == 'check') {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
-        } else if (turnPlayer.next_move == 'fold') {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
-        }
-    } else if (!game.hand_over) {
-        let raiseAction = 'Raise';
-        foldButton.innerHTML = 'Fold';
-
-        if (callAmount == 0) {
-            callButton.innerHTML = 'Check';
-            raiseAction = 'Bet';
-        } else {
-            callButton.innerHTML = `$${callAmount} Call`;
+            foldButton.classList.remove('active');
         }
 
-        callButton.addEventListener("click", () => {
-            choiceContainer.classList.remove('flash');
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
-        });
+        if (autoCheck) {
+            choiceContainer.innerHTML = '';
+            if (playerId == turnPlayer.id) {
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
+            }
+        } else if (!game.hand_over && turnPlayer.next_move != null && playerId == turnPlayer.id) {
+            if (turnPlayer.next_move == 'check') {
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
+            } else if (turnPlayer.next_move == 'fold') {
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
+            }
+        } else if (!game.hand_over) {
+            let raiseAction = 'Raise';
+            foldButton.innerHTML = 'Fold';
 
-        foldButton.addEventListener("click", () => {
-            choiceContainer.classList.remove('flash');
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
-        });
-
-        if (playerId == turnPlayer.id) {
-            if (thisPlayer.balance > minRaise) {
-                raiseButton.innerHTML = `$${minRaise} ${raiseAction}`;
-                raiseSlider.oninput = () => {
-                    raiseAmount = raiseSlider.value;
-                    if (thisPlayer.balance - raiseAmount < game.min_raise) {
-                        raiseSlider.setAttribute('step', 1);
-                    } else {
-                        raiseSlider.setAttribute('step', Math.floor(game.big_blind / 2));
-                    }
-                    raiseButton.innerHTML = `$${raiseAmount} ${raiseAction}`;
-                }
-            } else if (thisPlayer.balance > 0) {
-                raiseButton.innerHTML = `$${thisPlayer.balance} All-in`;
+            if (callAmount == 0) {
+                callButton.innerHTML = 'Check';
+                raiseAction = 'Bet';
+            } else {
+                callButton.innerHTML = `$${callAmount} Call`;
             }
 
-            raiseButton.addEventListener("click", () => {
-                choiceContainer.classList.remove('flash');
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'bet', amount: raiseAmount });
-            });
-
-            mainChoices.appendChild(raiseButton);
-            choiceContainer.appendChild(raiseSlider);
-            choiceContainer.classList.add('flash');
-        }
-    } 
-    
-    bestHandScore.innerHTML = `${scoreRanking[thisPlayer.score[0]]}`;
-    bestHandCards.innerHTML = "";
-    for (let i = 0; i < thisPlayer.best_hand.length; i++) {
-        bestHandCards.appendChild(makeCardFront(thisPlayer.best_hand[i]));
-    }
-
-    if (game.hand_over) {
-        const newGameDelay = 8000;
-
-        if (!thisPlayer.show && thisPlayer.live) {
-            callButton.innerHTML = 'Show';
-            foldButton.innerHTML = 'Muck';
-            choiceContainer.classList.add('flash');
             callButton.addEventListener("click", () => {
                 choiceContainer.classList.remove('flash');
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'show' });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
             });
 
             foldButton.addEventListener("click", () => {
                 choiceContainer.classList.remove('flash');
-                choiceContainer.innerHTML = '';
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
             });
 
+            if (playerId == turnPlayer.id) {
+                if (thisPlayer.balance > minRaise) {
+                    raiseButton.innerHTML = `$${minRaise} ${raiseAction}`;
+                    raiseSlider.oninput = () => {
+                        raiseAmount = raiseSlider.value;
+                        if (thisPlayer.balance - raiseAmount < game.min_raise) {
+                            raiseSlider.setAttribute('step', 1);
+                        } else {
+                            raiseSlider.setAttribute('step', Math.floor(game.big_blind / 2));
+                        }
+                        raiseButton.innerHTML = `$${raiseAmount} ${raiseAction}`;
+                    }
+                } else if (thisPlayer.balance > 0) {
+                    raiseButton.innerHTML = `$${thisPlayer.balance} All-in`;
+                }
+
+                raiseButton.addEventListener("click", () => {
+                    choiceContainer.classList.remove('flash');
+                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'bet', amount: raiseAmount });
+                });
+
+                mainChoices.appendChild(raiseButton);
+                choiceContainer.appendChild(raiseSlider);
+                choiceContainer.classList.add('flash');
+            }
         } else {
-            choiceContainer.classList.remove('flash');
-            choiceContainer.innerHTML = '';
+            if (!thisPlayer.show) {
+                callButton.innerHTML = 'Show';
+                foldButton.innerHTML = 'Muck';
+                choiceContainer.classList.add('flash');
+                callButton.addEventListener("click", () => {
+                    choiceContainer.classList.remove('flash');
+                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'show' });
+                });
+
+                foldButton.addEventListener("click", () => {
+                    choiceContainer.classList.remove('flash');
+                    choiceContainer.innerHTML = '';
+                });
+
+            } else {
+                choiceContainer.classList.remove('flash');
+                choiceContainer.innerHTML = '';
+            }
         }
+    }
+
+    if (game.hand_over) {
+        const newGameDelay = 8000;
 
         gameHand = game.hand++;
         setTimeout(() => {
@@ -463,3 +464,34 @@ socket.on('game_info', game => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const chatInput = document.getElementById('chat_input');
+    const chatBox = document.getElementById('chat_box');
+    const gameLogBox = document.getElementById('game_log_box');
+    chatInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            socket.emit('playerChat', { gameId: gameId, playerId: playerId, sessionId: sessionId, input: chatInput.value, new: false });
+            chatInput.value = '';
+        }
+    });
+
+    socket.on('chat', content => {
+        let lines = content.lines;
+        for (let i = 0; i < lines.length; i++) {
+            let line = document.createElement('div');
+            line.innerHTML = `<b>${lines[i][0]}:</b> ${lines[i][1]}`;
+            chatBox.appendChild(line);
+        }        
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    // socket.on('log', content => {
+    //     let lines = content.lines;
+    //     for (let i = 0; i < lines.length; i++) {
+    //         let line = document.createElement('div');
+    //         line.innerHTML = `<b>${lines[i][0]}:</b> ${lines[i][1]}`;
+    //         gameLogBox.appendChild(line);
+    //     }        
+    //     gameLogBox.scrollTop = gameLogBox.scrollHeight;
+    // });
+});

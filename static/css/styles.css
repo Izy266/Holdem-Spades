@@ -23,8 +23,8 @@ h2 {
 }
 
 h3 {
-    margin:0;
-    padding:0;
+    margin: 0;
+    padding: 0;
 }
 
 p {
@@ -124,7 +124,6 @@ button p {
     border: none;
     cursor: pointer;
 }
-
 
 .menu_button:hover {
     background-color: rgb(0, 0, 0, 0.1);
@@ -306,7 +305,6 @@ button p {
 
 .game .main {
     justify-content: space-between;
-    margin: 10px 0;
 }
 
 body.game {
@@ -331,18 +329,6 @@ body.game {
     color: white;
 }
 
-#game_footer {
-    width: 100%;
-    display: grid;
-    color: white;
-    background-color: rgb(0, 0, 0, 0.25);
-    box-shadow: rgba(0, 0, 0, 0.05) 3px 3px 6px 0px inset, rgba(0, 0, 0, 0.08) -3px -3px 6px 1px inset;
-    grid-template-columns: repeat(3, 1fr);
-    
-    justify-content: center;
-    align-items: center;
-    height: 30vh;
-}
 
 #player_list {
     display: grid;
@@ -547,6 +533,7 @@ body.game {
 .player_score {
     display: flex;
     justify-content: center;
+    align-items: center;
     font-weight: 800;
 }
 
@@ -593,35 +580,124 @@ body.game {
     gap: 5px;
 }
 
+#game_footer {
+    display: grid;
+    color: white;
+    background-color: rgb(0, 0, 0, 0.25);
+    box-shadow: rgba(0, 0, 0, 0.05) 3px 3px 6px 0px inset, rgba(0, 0, 0, 0.08) -3px -3px 6px 1px inset;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 10px;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+}
+
 .footer_item {
-    display:grid;
-    grid-template-rows: auto 100px auto;
+    display: grid;
+    height: 100%;
+    grid-template-rows: 50px 100px auto;
+    grid-template-columns: 1fr;
+    width: auto;
+    border-radius: 5px;
+    background-color: rgb(0, 0, 0, 0.2);
+}
+
+#game_log {
+    grid-template-rows: 50px auto;
+}
+
+#input_area {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+#chat_input {
+    font-family: "Inter Tight";
+    font-size: 14px;
+    padding: 0.6rem;
+    margin: 0;
+    width: 100%;
+    border: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-color: rgb(0, 0, 0, 0.2);
+    color: white;
+}
+
+#chat_input::placeholder {
+    color: white;
+}
+
+#chat_input:focus {
+    outline: none;
+    box-shadow: inset 0px 0px 0px 1px rgb(43, 123, 214, 0.9);
+    caret-color: white;
+}
+
+#chat_box, #game_log_box {
+    display:flex;
+    flex-direction: column;
+    justify-content: start;
+    padding-left: 10px;
+    height: 100%;
+    overflow-y: auto;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+#chat_box div, #game_log_box div {
+    padding: 0.15rem 0;
+}
+
+#chat_box::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    padding:0;
+    margin: 0;
+}
+
+#chat_box::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+#chat_box::-webkit-scrollbar-thumb {
+    background-color: rgb(255, 255, 255, 0.3);
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+
+#chat_box::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
+#chat_box::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+.footer_item h3 {
+    display: flex;
     justify-content: start;
     align-items: center;
-    margin: 15px;
-
-    border-radius: 10px;
-    border: 1px solid rgb(0,0,0,0.2);
+    padding: 10px;
 }
 
 #best_hand {
     justify-content: center;
+    padding: 0 10px;
 }
 
 #best_hand h3 {
     justify-content: center;
 }
 
-.footer_item h3 {
-    display: flex;
-    justify-content: start;
-}
-
 .best_hand_cards {
     display: flex;
     width: 100%;
-    gap: 1vw;
+    gap: 1rem;
     justify-content: center;
+    align-items: center;
 }
 
 #best_hand .card {

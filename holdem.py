@@ -40,11 +40,12 @@ class TexasHoldem:
         self.creator_id = None
         self.last_better_id = None
         self.hands = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush']
-        self.log = []
-        self.time_per_move = 5
+        self.time_per_move = 15
         self.move_time_start = None
         self.move_time_remaining = None
         self.timer_thread = None
+        self.chat = []
+        self.log = []
 
     def add_player(self, player):
         self.players.append(player)

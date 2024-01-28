@@ -125,7 +125,7 @@ let gameHand = 0;
 socket.on('connect', () => {
     socket.emit('join', { gameId: gameId, playerId: playerId, sessionId: sessionId }, (response) => {
         if (!response) {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'none' });
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'none', logLen: 0 });
             socket.emit('playerChat', { gameId: gameId, playerId: playerId, sessionId: sessionId, input: '', new: true })
         } else {
             window.location.href = '/join/' + response.gameId;
@@ -150,9 +150,9 @@ socket.on('game_info', game => {
     const totalPlayers = players.length;
     const midPoint = Math.floor(totalPlayers / 2);
     const turnPlayer = players.find(player => player.current);
-    const autoCheck = !game.hand_over && (turnPlayer.balance == 0 || (game.current_bet == 0 && players.filter(p => p.live && p.balance > 0).length < 2))
     const playerListIds = Array.from(playerList.children).map(child => child.id);
     const playerIds = players.map(player => player.id);
+    const gameLogBox = document.getElementById('game_log_box');
 
     choiceContainer.innerHTML = '';
     gameButtonContainer.innerHTML = '';
@@ -171,7 +171,7 @@ socket.on('game_info', game => {
         gameButton.innerHTML = "Join Game";
         gameButtonContainer.appendChild(gameButton);
         gameButton.addEventListener("click", () => {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'join' });
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'join', logLen: gameLogBox.childElementCount });
         });
     } else {
         const gameButton = document.createElement('button');
@@ -179,7 +179,7 @@ socket.on('game_info', game => {
         gameButton.innerHTML = "Leave Game";
         gameButtonContainer.appendChild(gameButton);
         gameButton.addEventListener("click", () => {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'leave' });
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'leave', logLen: gameLogBox.childElementCount });
             window.location.href = '/';
         });
     }
@@ -225,7 +225,7 @@ socket.on('game_info', game => {
                 });
             }
 
-            if (player.current && !game.hand_over && !autoCheck) {
+            if (player.current && !game.hand_over) {
                 let draw = playerInfoContainer.querySelector('.draw');
                 if (draw == null || game.time_left == game.time_per_move) {
                     playerInfo.classList.remove('draw');
@@ -297,7 +297,7 @@ socket.on('game_info', game => {
             startButton.innerHTML = 'Start Game';
             choiceContainer.appendChild(startButton);
             startButton.addEventListener('click', () => {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand' });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand', logLen: gameLogBox.childElementCount });
             });
         }
         return;
@@ -372,16 +372,11 @@ socket.on('game_info', game => {
             foldButton.classList.remove('active');
         }
 
-        if (autoCheck) {
-            choiceContainer.innerHTML = '';
-            if (playerId == turnPlayer.id) {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
-            }
-        } else if (!game.hand_over && turnPlayer.next_move != null && playerId == turnPlayer.id) {
+        if (!game.hand_over && turnPlayer.next_move != null && playerId == turnPlayer.id) {
             if (turnPlayer.next_move == 'check') {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check', logLen: gameLogBox.childElementCount });
             } else if (turnPlayer.next_move == 'fold') {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold', logLen: gameLogBox.childElementCount });
             }
         } else if (!game.hand_over) {
             let raiseAction = 'Raise';
@@ -396,12 +391,12 @@ socket.on('game_info', game => {
 
             callButton.addEventListener("click", () => {
                 choiceContainer.classList.remove('flash');
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check', logLen: gameLogBox.childElementCount });
             });
 
             foldButton.addEventListener("click", () => {
                 choiceContainer.classList.remove('flash');
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold', logLen: gameLogBox.childElementCount });
             });
 
             if (playerId == turnPlayer.id) {
@@ -422,7 +417,7 @@ socket.on('game_info', game => {
 
                 raiseButton.addEventListener("click", () => {
                     choiceContainer.classList.remove('flash');
-                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'bet', amount: raiseAmount });
+                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'bet', amount: raiseAmount, logLen: gameLogBox.childElementCount });
                 });
 
                 mainChoices.appendChild(raiseButton);
@@ -436,7 +431,7 @@ socket.on('game_info', game => {
                 choiceContainer.classList.add('flash');
                 callButton.addEventListener("click", () => {
                     choiceContainer.classList.remove('flash');
-                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'show' });
+                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'show', logLen: gameLogBox.childElementCount });
                 });
 
                 foldButton.addEventListener("click", () => {
@@ -456,7 +451,7 @@ socket.on('game_info', game => {
 
         gameHand = game.hand++;
         setTimeout(() => {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand' });
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand', logLen: gameLogBox.childElementCount });
             if (thisPlayer.afk > 5) {
                 window.location.href = '/';
             }
@@ -485,13 +480,13 @@ document.addEventListener('DOMContentLoaded', () => {
         chatBox.scrollTop = chatBox.scrollHeight;
     });
 
-    // socket.on('log', content => {
-    //     let lines = content.lines;
-    //     for (let i = 0; i < lines.length; i++) {
-    //         let line = document.createElement('div');
-    //         line.innerHTML = `<b>${lines[i][0]}:</b> ${lines[i][1]}`;
-    //         gameLogBox.appendChild(line);
-    //     }        
-    //     gameLogBox.scrollTop = gameLogBox.scrollHeight;
-    // });
+    socket.on('log', content => {
+        let lines = content.lines;
+        for (let i = 0; i < lines.length; i++) {
+            let line = document.createElement('div');
+            line.innerHTML = `<b>${lines[i][0]}:</b> ${lines[i][1]}`;
+            gameLogBox.appendChild(line);
+        }        
+        gameLogBox.scrollTop = gameLogBox.scrollHeight;
+    });
 });

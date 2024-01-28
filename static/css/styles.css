@@ -604,7 +604,7 @@ body.game {
 }
 
 #game_log {
-    grid-template-rows: 50px auto;
+    grid-template-rows: 50px 136px;
 }
 
 #input_area {
@@ -651,28 +651,28 @@ body.game {
     padding: 0.15rem 0;
 }
 
-#chat_box::-webkit-scrollbar {
+#chat_box::-webkit-scrollbar, #game_log_box::-webkit-scrollbar {
     width: 10px;
     height: 10px;
     padding:0;
     margin: 0;
 }
 
-#chat_box::-webkit-scrollbar-track {
+#chat_box::-webkit-scrollbar-track, #game_log_box::-webkit-scrollbar-track {
     background-color: transparent;
 }
 
-#chat_box::-webkit-scrollbar-thumb {
+#chat_box::-webkit-scrollbar-thumb, #game_log_box::-webkit-scrollbar-thumb {
     background-color: rgb(255, 255, 255, 0.3);
     border: 3px solid transparent;
     background-clip: content-box;
 }
 
-#chat_box::-webkit-scrollbar-thumb:hover {
+#chat_box::-webkit-scrollbar-thumb:hover, #game_log_box::-webkit-scrollbar-thumb:hover {
     background-color: #a8bbbf;
 }
 
-#chat_box::-webkit-scrollbar-corner {
+#chat_box::-webkit-scrollbar-corner, #game_log_box::-webkit-scrollbar-corner {
     background: transparent;
   }
 

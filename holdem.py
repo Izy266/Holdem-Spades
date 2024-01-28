@@ -3,14 +3,11 @@ from collections import defaultdict
 
 class Player:
     def __init__(self, name, id, balance):
-        self.name = name
-        self.id = id
-        self.balance = balance
+        self.name, self.id, self.balance = name, id, balance
         self.session_id = None
-        self.hand = []
+        self.hand, self.best_hand = [], []
         self.bets = [0 for _ in range(4)]
         self.score = [-1]
-        self.best_hand = []
         self.moved = False
         self.live = True
         self.in_game = True
@@ -20,81 +17,135 @@ class Player:
         self.afk = 0
         
 class TexasHoldem:
-    def __init__(self, buy_in, small_blind, big_blind):
-        self.id = None
+    def __init__(self, game_id, creator_id, buy_in, small_blind, big_blind):
+        self.id, self.creator_id = game_id, creator_id
+        self.buy_in, self.small_blind, self.big_blind = buy_in, small_blind, big_blind
+        self.deck, self.community_cards, self.players = [], [], []
+        self.pot, self.button, self.round, self.turn, self.turn_start = 0, 0, 0, 0, 0
+        self.min_raise, self.current_bet = 0, 0
+        self.round, self.hand = -1, -1
         self.live = False
-        self.players = []
-        self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
-        self.community_cards = []
-        self.pot = 0
-        self.button = 0 # to track sb_turn, bb_turn, and turn at new hand
-        self.round = 0
-        self.turn = 3 if len(self.players) > 2 else 2
-        self.buy_in = buy_in
-        self.small_blind = small_blind
-        self.big_blind = big_blind
-        self.min_raise = big_blind
-        self.current_bet = 0
-        self.round = -1
-        self.hand = -1
-        self.creator_id = None
         self.last_better_id = None
-        self.hands = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush']
-        self.time_per_move = 15
-        self.move_time_start = None
-        self.move_time_remaining = None
-        self.timer_thread = None
-        self.chat = []
-        self.log = []
-
+        self.timer_thread, self.time_per_move, self.move_time_start, self.move_time_remaining = None, 15000, 0, 0
+        self.chat, self.log = [], []
+    
     def add_player(self, player):
         self.players.append(player)
-    
+        self.log.append(('join', player.name))
+
     def remove_player(self, player_id):
         self.players = [p for p in self.players if p.id != player_id]
+
+    def get_player_by_id(self, player_id):
+        return next(p for p in self.players if p.id == player_id)
     
-    def get_player(self, name = None, id = None):
-        in_game = [p.id for p in self.players] if id else [p.name for p in self.players]
-        lookup = id if id else name
-        return self.players[in_game.index(lookup)]
-
-    def get_live_ind(self, ind):
+    def get_active_ind(self, ind):
         ind %= len(self.players)
-        while not self.players[ind].live:
-            ind += 1
-            ind %= len(self.players)
+        player = self.players[ind]
+        while not self.round_over() and not (player.live and player.balance):
+            player.moved = True
+            ind = (ind + 1) % len(self.players)
+            player = self.players[ind]
         return ind
-
-    def cur_player(self):
-        self.turn = self.get_live_ind(self.turn)
+    
+    def set_turn_next(self):
+        self.turn = self.get_active_ind(self.turn + 1)
+    
+    def current_player(self):
         return self.players[self.turn]
+    
+    def live_players(self):
+        return [p for p in self.players if p.live and p.afk < 3]
+    
+    def active_players(self):
+        return [p for p in self.players if p.live and p.afk < 3 and p.balance]
+    
+    def round_over(self):
+        return all(player.moved for player in self.players)
+    
+    def hand_over(self):
+        return self.round > 3 or (len(self.live_players()) == 1 and self.round > -1)
+    
+    def handle_round_over(self):
+        if self.round_over():
+            self.new_round()
+        if self.hand_over():
+            self.distribute_pot()
+    
+    def max_profits(self):
+        max_wins = defaultdict(int)
+        stakes = {p.id: sum(p.bets) for p in self.players}
+        in_pot = self.pot
 
-    def place_cards(self):
+        while in_pot:
+            bets = [stakes[p.id] for p in self.players if stakes[p.id]]
+            min_bet = min(bets)
+            for p in self.players:
+                if stakes[p.id]:
+                    max_wins[p.id] += min_bet * len(bets) if p.live else 0
+                    stakes[p.id] -= min_bet
+                    in_pot -= min_bet
+        return max_wins
+
+    def distribute_pot(self):
+        max_wins = self.max_profits()
+        scores = [p.score for p in self.players if p.live]
+        last_better = self.get_player_by_id(self.last_better_id)
+
+        while self.pot:
+            max_score = max(scores)
+            scores = [score for score in scores if score != max_score]
+            winners = [p for p in self.players if p.live and p.score == max_score]
+            while winners:
+                winner =  winners[-1]
+                profit = min(max_wins[winner.id], self.pot//len(winners))
+                winner.show = len(self.live_players()) > 1
+                winner.balance += profit
+                winner.profit = profit
+                self.pot -= profit
+                winners.pop()
+                self.log.append(('win', winner.name, profit, winner.best_hand if winner.show else []))
+
+        if last_better.bets[-1] > 0:
+            last_better.show = True
+
+    def deal_community_cards(self):
         if not self.hand_over():
-            if self.round == 1:
-                self.community_cards = [self.deck.pop() for _ in range(3)]
-            elif len(self.community_cards) < 5:
+            main_logs = [('flop', (0, 3)), ('turn', (3, 4)), ('river', (4, 5))]
+            cards_down = len(self.community_cards)
+            cards_to_deal = 5 - cards_down if len(self.active_players()) < 2 else 3 if self.round == 0 else 1 if self.round < 3 else 0
+            for _ in range(cards_to_deal):
                 self.community_cards.append(self.deck.pop())
 
-    def round_over(self):
-        players_live = [player for player in self.players if player.live]
-        return all(player.moved for player in players_live)
+            cards_down2 = len(self.community_cards)
+            start = cards_down2 - 3
+            diff = 1 if cards_down2 == 3 else cards_down2 - cards_down
+            
+            if diff > 1:
+                while start < len(main_logs):
+                    card_start, card_end = main_logs[start][1]
+                    self.log.append((main_logs[start][0], self.community_cards[card_start:card_end]))
+                    start += 1
+            else:
+                card_start, card_end = main_logs[start][1]
+                self.log.append((main_logs[start][0], self.community_cards[card_start:card_end]))
 
-    def hand_over(self):
-        players_live = [player for player in self.players if player.live]
-        return (len(players_live) == 1 and self.round > -1) or self.round > 3
+            cards_down - 2
 
-    def update_scores(self):
-        for player in self.players:
-            if player.live:
-                self.score(player)
-
-    def handle_round_over(self):
+    def new_round(self):
+        self.deal_community_cards()
         max_bet, max_better, bets = 0, None, []
+        show_all = len(self.live_players()) > 1 and len(self.active_players()) < 2
+
         for player in self.players:
+            self.score(player)
             player.moved = False
+            player.next_move = None
             bet = player.bets[self.round]
             bets.append(bet)
+            if player.live and show_all:
+                player.show = True
+                player.moved = True
             if bet > max_bet:
                 max_bet, max_better = bet, player
 
@@ -103,31 +154,27 @@ class TexasHoldem:
             diff = max_bet - bet_ceil
             max_better.bets[self.round] = bet_ceil
             max_better.balance += diff
-            self.pot -= diff
+            self.pot -= diff    
         
-        self.turn = (self.button + 1) % len(self.players)
+        self.turn = self.get_active_ind(self.turn_start)
         self.current_bet = 0
         self.min_raise = self.big_blind
         self.round += 1
-        self.place_cards()
-        self.update_scores()
-
+        if show_all:
+            self.round = 4
+    
     def new_hand(self):
-        self.round = 0
+        self.round, self.pot, self.community_cards = 0, 0, []
+        self.live = True
         self.hand += 1
-        self.pot = 0
-        self.community_cards = []
+        self.log.append(('new_hand'))
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
         random.shuffle(self.deck)
         for player in self.players:
-            player.live = player.balance > 0 and player.afk < 3
-            player.hand = [self.deck.pop(), self.deck.pop()] if player.live else []
-            player.best_hand = player.hand
-            player.score = [-1]
+            player.live = player.balance and player.afk < 3
+            player.hand = [self.deck.pop() for _ in range(2)] if player.live else []
             player.bets = [0 for _ in range(4)]
             player.profit = 0
-            player.next_move = None
-            player.moved = False
             player.show = False
             self.score(player)
             if not player.live:
@@ -136,75 +183,69 @@ class TexasHoldem:
                 player.afk += 1
         
         self.players = [p for p in self.players if p.in_game]
-
-        self.button = self.get_live_ind(self.button + 1)
-        self.turn = self.get_live_ind(self.button + 1 if len([p for p in self.players if p.live]) > 2 else self.button)
-        self.bet(self.small_blind, blind = True)
-        self.bet(self.big_blind, blind = True)
-
-    def distribute_pot(self):
-        max_win = defaultdict(int)
-        scores = [p.score for p in self.players if p.live]
-        stakes = {p.id: sum(p.bets) for p in self.players}
-        in_pot = self.pot
-
-        # Calculate max possible win for each player
-        while in_pot:
-            bets = [stakes[p.id] for p in self.players if stakes[p.id]]
-            min_bet = min(bets)
-            for p in self.players:
-                if stakes[p.id]:
-                    max_win[p.id] += min_bet * len(bets) if p.live else 0
-                    stakes[p.id] -= min_bet
-                    in_pot -= min_bet
-
-        # Calculate winners and split pot
-        while self.pot:
-            max_score = max(scores)
-            scores = [score for score in scores if score != max_score]
-            winners = [p for p in self.players if p.live and p.score == max_score]
-            while winners:
-                winners[-1].show = len([p for p in self.players if p.live]) > 1
-                profit = min(max_win[winners[0].id], self.pot//len(winners))
-                winners[-1].balance += profit
-                winners[-1].profit = profit
-                self.pot -= profit
-                winners.pop()
-
-    # Handle betting and calling
-    def bet(self, amount = 0, blind = False):
-        amount = int(amount)
-        player = self.cur_player()
-
-        if amount:
-            self.last_better_id = player.id
-            self.min_raise = max(self.min_raise, amount - self.current_bet)
-            self.current_bet = amount + player.bets[self.round]
-            
-            for p in self.players:
-                p.moved = False
+        self.button = self.get_active_ind(self.button + 1)
+        self.turn_start = self.get_active_ind(self.button + 1 if len(self.live_players()) > 2 else self.button)
+        self.turn = self.turn_start
+        self.bet(self.small_blind, 1)
+        self.bet(self.big_blind, 2)
+    
+    def place_bet(self, player, amount):
+        player.bets[self.round] += amount
+        player.balance -= amount
+        self.pot += amount
+    
+    def check(self):
+        player = self.current_player()
+        player.moved = True
+        call_amount = min(player.balance, self.current_bet - player.bets[self.round])
+        self.place_bet(player, call_amount)
+        if call_amount > 0:
+            main_log = 'all_in' if player.balance == 0 else 'call'
+            self.log.append((main_log, player.name, call_amount))
         else:
-            amount = self.current_bet - player.bets[self.round]
+            self.log.append(('check', player.name))
 
-        player.moved = not blind
-        bet = min(player.balance, amount)
-        player.bets[self.round] += bet
-        self.pot += bet
-        player.balance -= bet
-            
-        self.turn += 1
-            
+        self.set_turn_next()
+        self.handle_round_over()
+
+    
+    def bet(self, amount, blind = 0):
+        for p in self.players:
+            p.moved = False
+
+        player = self.current_player()
+        player.moved = blind == 0
+        amount = min(player.balance, amount)
+        self.last_better_id = player.id
+        self.min_raise = max(self.min_raise, amount - self.current_bet)
+        self.current_bet = amount + player.bets[self.round]
+        self.place_bet(player, amount)
+        if blind > 0:
+            main_log = 'small_blind' if blind == 1 else 'big_blind'
+            self.log.append((main_log, player.name, amount))
+        else:
+            main_log = 'all_in' if player.balance == 0 else 'raise'
+            self.log.append((main_log, player.name, amount))
+
+        self.set_turn_next()
+        self.handle_round_over()
+
     def fold(self):
-        player = self.cur_player()
+        player = self.current_player()
         player.live = False
-
-    # Sets and returns player score
+        player.moved = True
+        self.log.append(('fold', player.name))
+        self.set_turn_next()
+        self.handle_round_over()
+        
     def score(self, player):
         all_cards = player.hand + self.community_cards
         all_ranks = [card[0] for card in all_cards]
         all_suits = [card[1] for card in all_cards]
         all_cards_sorted = sorted(all_cards, reverse=True)
         all_ranks_set = sorted(set(all_ranks), reverse=True)
+        player.best_hand = []
+        player.score = [-1]
 
         # Check straight flush and flush
         for suit in set(all_suits):

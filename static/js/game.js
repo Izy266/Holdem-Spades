@@ -20,7 +20,6 @@ function parseCard(card) {
     } else {
         rank = rank.toString();
     }
-
     return [rank, suite];
 }
 
@@ -112,6 +111,48 @@ function makePlayer(player) {
 
     return infoContainer;
 }
+
+function parseLog(line) {
+    let mainLog = line[0];
+    if (mainLog == 'new_hand') {
+        return '---------------------';
+    } else if (mainLog == 'small_blind') {
+        return `<b>${line[1]}</b> posted small blind $${line[2]}`;
+    } else if (mainLog == 'big_blind') {
+        return `<b>${line[1]}</b> posted big blind $${line[2]}`;
+    } else if (mainLog == 'raise') {
+        return `<b>${line[1]}</b> raised $${line[2]}`;
+    } else if (mainLog == 'call') {
+        return `<b>${line[1]}</b> called $${line[2]}`;
+    } else if (mainLog == 'all_in') {
+        return `<b>${line[1]}</b> went all in $${line[2]}`;
+    } else if (mainLog == 'check') {
+        return `<b>${line[1]}</b> checked`;
+    } else if (mainLog == 'fold') {
+        return `<b>${line[1]}</b> folded`;
+    } else if (mainLog == 'win') {
+        let cards = line[3].map(parseCard);
+        cards = cards.map(card => card.join('')).join(' ');
+        return `<b>${line[1]}</b> wins $${line[2]} ${cards}`;
+    } else if (mainLog == 'flop') {
+        let cards = line[1].map(parseCard);
+        cards = cards.map(card => card.join('')).join(' ');
+        return `Dealing the Flop: ${cards}`;
+    } else if (mainLog == 'turn') {
+        let card = parseCard(line[1][0]);
+        card = card.join('');
+        return `Dealing the Turn: ${card}`;
+    } else if (mainLog == 'river') {
+        let card = parseCard(line[1][0]);
+        card = card.join('');
+        return `Dealing the River: ${card}`;
+    } else if (mainLog == 'leave') {
+        return `<b>${line[1]}</b> left the game`;
+    } else if (mainLog == 'join') {
+        return `<b>${line[1]}</b> joined the game`;
+    }
+}
+
 
 const socket = io();
 const gameId = window.location.pathname.split('/').pop();
@@ -484,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let lines = content.lines;
         for (let i = 0; i < lines.length; i++) {
             let line = document.createElement('div');
-            line.innerHTML = `<b>${lines[i][0]}:</b> ${lines[i][1]}`;
+            line.innerHTML = parseLog(lines[i]);
             gameLogBox.appendChild(line);
         }        
         gameLogBox.scrollTop = gameLogBox.scrollHeight;

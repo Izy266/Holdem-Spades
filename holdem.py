@@ -167,7 +167,7 @@ class TexasHoldem:
         self.round, self.pot, self.community_cards = 0, 0, []
         self.live = True
         self.hand += 1
-        self.log.append(('new_hand'))
+        self.log.append(['new_hand'])
         self.deck = [(rank, suit) for suit in range(4) for rank in range(2, 15)]
         random.shuffle(self.deck)
         for player in self.players:

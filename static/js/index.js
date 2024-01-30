@@ -23,15 +23,18 @@ document.addEventListener('DOMContentLoaded', () => {
         buttonContent.appendChild(buttonTitle);
 
         if (option.title != 'Custom') {
+            const optionInfo = document.createElement('div');
             const buttonBuyIn = document.createElement('p');
             const buttonSmallBlind = document.createElement('p');
             const buttonBigBlind = document.createElement('p');
+            optionInfo.setAttribute('class', 'optionInfo');
             buttonBuyIn.innerText = `Buy-in: $${option.buyIn}`;
             buttonSmallBlind.innerText = `Small Blind: $${option.smallBlind}`;
             buttonBigBlind.innerText = `Big Blind: $${option.bigBlind}`;
-            buttonContent.appendChild(buttonBuyIn);
-            buttonContent.appendChild(buttonSmallBlind);
-            buttonContent.appendChild(buttonBigBlind);
+            optionInfo.appendChild(buttonBuyIn);
+            optionInfo.appendChild(buttonSmallBlind);
+            optionInfo.appendChild(buttonBigBlind);
+            buttonContent.appendChild(optionInfo);
         } else {
             buttonTitle.setAttribute('id', 'custom_button')
         }

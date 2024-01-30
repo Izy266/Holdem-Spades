@@ -153,7 +153,6 @@ function parseLog(line) {
     }
 }
 
-
 const socket = io();
 const gameId = window.location.pathname.split('/').pop();
 const playerId = getCookie('player_id');
@@ -504,6 +503,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat_input');
     const chatBox = document.getElementById('chat_box');
     const gameLogBox = document.getElementById('game_log_box');
+    const bestHandButton = document.getElementById('best_hand_button');
+    const chatButton = document.getElementById('chat_button');
+    const gameLogButton = document.getElementById('game_log_button');
+    const bestHand = document.getElementById('best_hand');
+    const chat = document.getElementById('chat');
+    const gameLog = document.getElementById('game_log');
+    
+    bestHandButton.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
+
+    bestHandButton.addEventListener("click", () => {
+        bestHand.style.setProperty('--show', 'grid');
+        chat.style.setProperty('--show', 'none');
+        gameLog.style.setProperty('--show', 'none');
+        bestHandButton.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
+        chatButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        gameLogButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+    });
+
+    chatButton.addEventListener("click", () => {
+        bestHand.style.setProperty('--show', 'none');
+        chat.style.setProperty('--show', 'grid');        
+        gameLog.style.setProperty('--show', 'none');
+        bestHandButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        chatButton.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
+        gameLogButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+    });
+
+    gameLogButton.addEventListener("click", () => {
+        bestHand.style.setProperty('--show', 'none');
+        chat.style.setProperty('--show', 'none');        
+        gameLog.style.setProperty('--show', 'grid');
+        bestHandButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        chatButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        gameLogButton.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
+    });
+
     chatInput.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
             socket.emit('playerChat', { gameId: gameId, playerId: playerId, sessionId: sessionId, input: chatInput.value, new: false });
@@ -530,4 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }        
         gameLogBox.scrollTop = gameLogBox.scrollHeight;
     });
+
+
+
 });

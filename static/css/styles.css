@@ -525,6 +525,7 @@ body.game {
     justify-content: center;
     align-items: center;
     gap: 15px;
+    margin:auto;
 }
 
 .pip_container {

@@ -318,9 +318,12 @@ button p {
     justify-content: space-between;
 }
 
-body.game {
+.game {
     background-color: rgb(19, 233, 108);
     background-image: url('../img/felt.png');
+    display:grid;
+    grid-template-rows: 50px 1fr 220px;
+    justify-items: space-between;
 }
 
 .game .header {
@@ -425,10 +428,6 @@ body.game {
     font-size: clamp(24px, 7vw, 38px);
 }
 
-#com_cards .card_front div p {
-    font-size: clamp(36px, 10.5vw, 58px);
-}
-
 .card {
     height: clamp(69px, 5.7vw, 110px);
     width: clamp(48px, 4vw, 77px);
@@ -444,9 +443,8 @@ body.game {
 }
 
 .card_front div p {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: clamp(36px, 3vw, 58px);
-    margin-bottom: 37%;
+    font-family: 'Noto Serif JP';
+    margin: 37% 15%;
 }
 
 .card_front {
@@ -758,10 +756,6 @@ body.game {
     font-size: clamp(19px, 6vw, 32px);
 }
 
-#best_hand .card_front div p {
-    font-size: clamp(30px, 9vw, 47px);
-}
-
 #best_hand .card_front {
     justify-content: center;
     align-items: center;
@@ -951,13 +945,14 @@ body.game {
     .footer_button_container {
         display: flex;
         height: 100%;
+        width: 40px;
         justify-content: center;
         align-items: center;
     }
 
     .footer_button {
         height: 100%;
-        width: 40px;
+        width: 100%;
         background-color: transparent;
         background-size: 25px 25px;
         background-repeat: no-repeat;

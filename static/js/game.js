@@ -503,6 +503,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat_input');
     const chatBox = document.getElementById('chat_box');
     const gameLogBox = document.getElementById('game_log_box');
+    const bestHandButtonContainer = document.getElementById('best_hand_button_container');
+    const chatButtonContainer = document.getElementById('chat_button_container');
+    const gameLogButtonContainer = document.getElementById('game_log_button_container');
     const bestHandButton = document.getElementById('best_hand_button');
     const chatButton = document.getElementById('chat_button');
     const gameLogButton = document.getElementById('game_log_button');
@@ -510,33 +513,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const chat = document.getElementById('chat');
     const gameLog = document.getElementById('game_log');
     
-    bestHandButton.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
+    bestHandButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
 
     bestHandButton.addEventListener("click", () => {
         bestHand.style.setProperty('--show', 'grid');
         chat.style.setProperty('--show', 'none');
         gameLog.style.setProperty('--show', 'none');
-        bestHandButton.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
-        chatButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
-        gameLogButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        bestHandButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
+        chatButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        gameLogButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0)';
     });
 
     chatButton.addEventListener("click", () => {
         bestHand.style.setProperty('--show', 'none');
         chat.style.setProperty('--show', 'grid');        
         gameLog.style.setProperty('--show', 'none');
-        bestHandButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
-        chatButton.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
-        gameLogButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        bestHandButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        chatButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
+        gameLogButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0)';
     });
 
     gameLogButton.addEventListener("click", () => {
         bestHand.style.setProperty('--show', 'none');
         chat.style.setProperty('--show', 'none');        
         gameLog.style.setProperty('--show', 'grid');
-        bestHandButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
-        chatButton.style.backgroundColor = 'rgb(0, 0, 0, 0)';
-        gameLogButton.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
+        bestHandButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        chatButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0)';
+        gameLogButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
     });
 
     chatInput.addEventListener('keydown', e => {

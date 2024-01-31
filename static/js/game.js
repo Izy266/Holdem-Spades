@@ -165,7 +165,7 @@ let gameHand = 0;
 socket.on('connect', () => {
     socket.emit('join', { gameId: gameId, playerId: playerId, sessionId: sessionId }, (response) => {
         if (!response) {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'none', logLen: 0 });
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'none' });
             socket.emit('playerChat', { gameId: gameId, playerId: playerId, sessionId: sessionId, input: '', new: true })
         } else {
             window.location.href = '/join/' + response.gameId;
@@ -211,7 +211,7 @@ socket.on('game_info', game => {
         gameButton.innerHTML = "Join Game";
         gameButtonContainer.appendChild(gameButton);
         gameButton.addEventListener("click", () => {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'join', logLen: gameLogBox.childElementCount });
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'join' });
         });
     } else {
         const gameButton = document.createElement('button');
@@ -219,7 +219,7 @@ socket.on('game_info', game => {
         gameButton.innerHTML = "Leave Game";
         gameButtonContainer.appendChild(gameButton);
         gameButton.addEventListener("click", () => {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'leave', logLen: gameLogBox.childElementCount });
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'leave' });
             window.location.href = '/';
         });
     }
@@ -337,7 +337,7 @@ socket.on('game_info', game => {
             startButton.innerHTML = 'Start Game';
             choiceContainer.appendChild(startButton);
             startButton.addEventListener('click', () => {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand', logLen: gameLogBox.childElementCount });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand' });
             });
         }
         return;
@@ -414,9 +414,9 @@ socket.on('game_info', game => {
 
         if (!game.hand_over && turnPlayer.next_move != null && playerId == turnPlayer.id) {
             if (turnPlayer.next_move == 'check') {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check', logLen: gameLogBox.childElementCount });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
             } else if (turnPlayer.next_move == 'fold') {
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold', logLen: gameLogBox.childElementCount });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
             }
         } else if (!game.hand_over) {
             let raiseAction = 'Raise';
@@ -425,18 +425,20 @@ socket.on('game_info', game => {
             if (callAmount == 0) {
                 callButton.innerHTML = 'Check';
                 raiseAction = 'Bet';
-            } else {
+            } else if (thisPlayer.balance > callAmount) {
                 callButton.innerHTML = `$${callAmount} Call`;
+            } else {
+                callButton.innerHTML = `$${thisPlayer.balance} All-in`;
             }
 
             callButton.addEventListener("click", () => {
                 choiceContainer.classList.remove('flash');
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check', logLen: gameLogBox.childElementCount });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'check' });
             });
 
             foldButton.addEventListener("click", () => {
                 choiceContainer.classList.remove('flash');
-                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold', logLen: gameLogBox.childElementCount });
+                socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'fold' });
             });
 
             if (playerId == turnPlayer.id) {
@@ -451,17 +453,21 @@ socket.on('game_info', game => {
                         }
                         raiseButton.innerHTML = `$${raiseAmount} ${raiseAction}`;
                     }
-                } else if (thisPlayer.balance > 0) {
-                    raiseButton.innerHTML = `$${thisPlayer.balance} All-in`;
+                    mainChoices.appendChild(raiseButton);
+                    choiceContainer.appendChild(raiseSlider);
+                } else if (thisPlayer.balance > callAmount) {
+                    raiseAmount = thisPlayer.balance;
+                    raiseButton.innerHTML = `$${raiseAmount} All-in`;
+                    mainChoices.appendChild(raiseButton);
                 }
 
-                raiseButton.addEventListener("click", () => {
-                    choiceContainer.classList.remove('flash');
-                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'bet', amount: raiseAmount, logLen: gameLogBox.childElementCount });
-                });
+                if (thisPlayer.balance > callAmount) {
+                    raiseButton.addEventListener("click", () => {
+                        choiceContainer.classList.remove('flash');
+                        socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'bet', amount: raiseAmount });
+                    });
+                }
 
-                mainChoices.appendChild(raiseButton);
-                choiceContainer.appendChild(raiseSlider);
                 choiceContainer.classList.add('flash');
             }
         } else {
@@ -471,7 +477,7 @@ socket.on('game_info', game => {
                 choiceContainer.classList.add('flash');
                 callButton.addEventListener("click", () => {
                     choiceContainer.classList.remove('flash');
-                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'show', logLen: gameLogBox.childElementCount });
+                    socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'show' });
                 });
 
                 foldButton.addEventListener("click", () => {
@@ -491,7 +497,7 @@ socket.on('game_info', game => {
 
         gameHand = game.hand++;
         setTimeout(() => {
-            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand', logLen: gameLogBox.childElementCount });
+            socket.emit('playerAction', { gameId: gameId, playerId: playerId, sessionId: sessionId, action: 'new_hand' });
             if (thisPlayer.afk > 5) {
                 window.location.href = '/';
             }
@@ -512,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bestHand = document.getElementById('best_hand');
     const chat = document.getElementById('chat');
     const gameLog = document.getElementById('game_log');
-    
+
     bestHandButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
 
     bestHandButton.addEventListener("click", () => {
@@ -526,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chatButton.addEventListener("click", () => {
         bestHand.style.setProperty('--show', 'none');
-        chat.style.setProperty('--show', 'grid');        
+        chat.style.setProperty('--show', 'grid');
         gameLog.style.setProperty('--show', 'none');
         bestHandButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0)';
         chatButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0.2)';
@@ -535,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gameLogButton.addEventListener("click", () => {
         bestHand.style.setProperty('--show', 'none');
-        chat.style.setProperty('--show', 'none');        
+        chat.style.setProperty('--show', 'none');
         gameLog.style.setProperty('--show', 'grid');
         bestHandButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0)';
         chatButtonContainer.style.backgroundColor = 'rgb(0, 0, 0, 0)';
@@ -555,7 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let line = document.createElement('div');
             line.innerHTML = `<b>${lines[i][0]}:</b> ${lines[i][1]}`;
             chatBox.appendChild(line);
-        }        
+        }
         chatBox.scrollTop = chatBox.scrollHeight;
     });
 
@@ -565,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let line = document.createElement('div');
             line.innerHTML = parseLog(lines[i]);
             gameLogBox.appendChild(line);
-        }        
+        }
         gameLogBox.scrollTop = gameLogBox.scrollHeight;
     });
 

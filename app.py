@@ -110,7 +110,6 @@ def handle_player_action(data):
     game_id = clean(str(data['gameId']))
     player_id = clean(str(data['playerId']))
     session_id = clean(str(data['sessionId']))
-    log_len = int(data['logLen'])
     game = games[game_id]
     player_sessions = {p.id: p.session_id for p in game.players}
     actions = ['none', 'join', 'leave', 'check', 'bet', 'fold', 'afk_fold', 'new_hand', 'show']
@@ -119,7 +118,8 @@ def handle_player_action(data):
     
     cur_player = game.current_player()
     this_player = game.get_player_by_id(player_id)
-    available_players = [p for p in game.players if p.balance and p.afk < 3]
+    available_players = [p for p in game.players if p.balance and p.in_game and p.afk < 3]
+    log_len = len(game.log)
 
     if action in ['check', 'bet', 'fold', 'afk_fold']:
         if player_id == cur_player.id:
@@ -143,7 +143,7 @@ def handle_player_action(data):
             socketio.emit('log', {'lines': game.log[log_len:]}, room=game.id)
             set_timer(game)
     elif action == 'leave':
-        game.log.append('leave', this_player.name)
+        game.log.append(('leave', this_player.name))
         socketio.emit('log', {'lines': game.log[log_len:]}, room=game.id)
         if this_player.id == cur_player.id:
             game.fold()

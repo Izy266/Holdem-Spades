@@ -20,16 +20,27 @@ h2 {
     margin: 0 15px;
     font-size: 30px;
     font-weight: 800;
-    /* text-align: center; */
+    text-align: center;
 }
 
-h3 {
+h3,
+h4 {
     margin: 0;
     padding: 0;
 }
 
-p {
-    margin: 0 15px;
+h4 {
+    font-family: "Inter Tight";
+    font-size: 20px;
+    font-weight: 700;
+}
+
+p, li {
+    color: rgb(90, 75, 87);
+}
+
+.intro p {
+    margin: 2px 15px;
     font-size: 21px;
     color: gray;
     text-align: center;
@@ -203,7 +214,10 @@ button p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 16px;
+    margin-top: 32px;
+}
+
+.main .intro {
     gap: 16px;
 }
 
@@ -321,7 +335,7 @@ button p {
 .game {
     background-color: rgb(19, 233, 108);
     background-image: url('../img/felt.png');
-    display:grid;
+    display: grid;
     grid-template-rows: 50px 1fr 220px;
     justify-items: space-between;
 }
@@ -419,12 +433,12 @@ button p {
     gap: clamp(5px, 0.5vw, 10px);
 }
 
-#com_cards .card {
+.com_cards .card {
     height: clamp(69px, 20vw, 110px);
     width: clamp(48px, 14vw, 77px);
 }
 
-#com_cards .card_front p {
+.com_cards .card_front p {
     font-size: clamp(24px, 7vw, 38px);
 }
 
@@ -481,7 +495,7 @@ button p {
     width: 70%;
 }
 
-#com_cards {
+.com_cards {
     display: flex;
     gap: 10px;
 }
@@ -523,7 +537,7 @@ button p {
     justify-content: center;
     align-items: center;
     gap: 15px;
-    margin:auto;
+    margin: auto;
 }
 
 .pip_container {
@@ -718,7 +732,7 @@ button p {
 }
 
 #player_list::-webkit-scrollbar {
-    display:none;
+    display: none;
 }
 
 .footer_item h3 {
@@ -752,6 +766,7 @@ button p {
     width: clamp(38px, 11vw, 57px);
     border-radius: 5px;
 }
+
 #best_hand .card_front p {
     font-size: clamp(19px, 6vw, 32px);
 }
@@ -861,6 +876,76 @@ button p {
     visibility: hidden;
 }
 
+.rules {
+    font-family: "Inter";
+}
+
+.rules .intro {
+    margin: 50px;
+}
+
+.rules .main {
+    height: auto;
+    align-items: start;
+    padding-bottom: 2vw;
+}
+
+.rules h2 {
+    font-size: 34px;
+}
+
+.rules .intro p {
+    font-size: 16px;
+}
+
+.rules h3 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.rules .section {
+    margin: 10px 10vw;
+}
+
+.section p, .section li {
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.rankings_container {
+    margin: 0 10vw;
+    margin-bottom: 20px;
+    display: inline-flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.ranking_container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgb(0, 0, 0, 0.05);
+    border-radius: 5px;
+    padding: 15px;
+    flex-wrap: wrap;
+}
+
+.ranking_container h4 {
+    margin-top: 15px;
+}
+
+.explanation {
+    color: gray;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    width: 100%;
+}
+
+#tips {
+    padding-left: 20px;
+}
+
 @keyframes flash {
 
     0%,
@@ -905,6 +990,14 @@ button p {
 
     .menu_button {
         display: block;
+    }
+
+    .rules .section {
+        margin: 10px 30px;
+    }
+
+    .rankings_container {
+        margin: auto;
     }
 }
 

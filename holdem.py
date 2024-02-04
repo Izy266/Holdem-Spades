@@ -26,7 +26,7 @@ class TexasHoldem:
         self.round, self.hand = -1, -1
         self.live = False
         self.last_better_id = None
-        self.timer_thread, self.time_per_move, self.move_time_start, self.move_time_remaining = None, 15, 0, 0
+        self.timer_thread, self.time_per_move, self.move_time_start, self.move_time_remaining = None, 15000, 0, 0
         self.chat, self.log = [], []
     
     def add_player(self, player):
@@ -44,6 +44,14 @@ class TexasHoldem:
         player = self.players[ind]
         while not self.round_over() and not (player.live and player.balance):
             player.moved = True
+            ind = (ind + 1) % len(self.players)
+            player = self.players[ind]
+        return ind
+
+    def get_live_ind(self, ind):
+        ind %= len(self.players)
+        player = self.players[ind]
+        while not player.live:
             ind = (ind + 1) % len(self.players)
             player = self.players[ind]
         return ind
@@ -91,6 +99,7 @@ class TexasHoldem:
         max_wins = self.max_profits()
         scores = [p.score for p in self.players if p.live]
         last_better = self.get_player_by_id(self.last_better_id)
+        show_start = self.get_live_ind(self.turn_start)
 
         while self.pot:
             max_score = max(scores)
@@ -107,7 +116,15 @@ class TexasHoldem:
                 self.log.append(('win', winner.name, profit, winner.best_hand if winner.show else []))
 
         if last_better.bets[-1] > 0:
-            last_better.show = True
+            show_start = self.players.index(last_better)
+
+        self.players[show_start].show = True
+        show_scores = [self.players[show_start].score]
+        ind = self.get_live_ind(show_start + 1)
+        while ind != show_start:
+            if self.players[ind].score >= max(show_scores):
+                self.players[ind].show = True
+            ind = self.get_live_ind(ind + 1)
 
     def deal_community_cards(self):
         if not self.hand_over():

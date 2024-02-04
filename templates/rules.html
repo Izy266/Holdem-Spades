@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,700;0,800;1,400;1,700&family=Inter:wght@400;500;600;800&family=Jost:wght@700;900&family=Noto+Serif+JP&family=Oswald:wght@200;300;400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <title>How to Play</title>
+</head>
+
+<body class="rules">
+    <div class="header">
+        <div class="logo">
+            <a href="/">
+                <img src="../static/img/logo_dark.svg" alt="Holdem Haven Logo" id="logo_img">
+            </a>
+            <div class="title">Holdem Spades</div>
+        </div>
+        <div class="menu">
+            <div class="menu_items">
+                <a href="/rules">How to Play</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <button class="menu_button"></button>
+        </div>
+    </div>
+
+    <div class="intro">
+        <h2>How to play Texas Hold'em</h2>
+        <p>Step-by-step instructions to master the game</p>
+    </div>
+
+    <div class="main">
+        <div class="section">
+            <h3>Rules</h3>
+            <p>Texas Hold'em is a popular variation of poker. The game consists of two cards being dealt face down to
+                each
+                player and then five community cards being placed face-up by the dealer—a series of three ("the flop")
+                then
+                two additional single cards ("the turn" and "the river"). Players have the options to check, bet, or
+                fold
+                after each deal.</p>
+        </div>
+        <div class="section">
+            <h3>Hand Rankings</h3>
+            <p>The objective of Texas Hold'em is to make the best five-card hand you can, using a combination of the two
+                'hole cards' you are dealt and the five community cards on the board. A straight for example is a 5 card
+                hand in which all the card ranks are sequential with the lowest straight consisting of cards with ranks
+                of A, 2, 3, 4, 5 and the highest straight, the Royal Straight, consisting of cards with ranks of 10, J,
+                Q, K, A in that sequential order. An (A)ce can be the lowest or highest card of a straight, but a
+                straight can not "wrap around"; a hand with a (J)ack, (Q)ueen, (K)ing, (A)ce, deuce(2) for example would
+                not be considered a straight. With hands of the same ranking, the tie is broken by comparing the highest
+                ranking card in each hand, if the hands have the same highest ranking card, the tie is broken by
+                comparing the second highest ranking card and so on. If all 5 cards' ranks are equal, it is considered a
+                tie and the pot is split accordingly. With that in mind, here are the rankings from highest to lowest:
+            </p>
+        </div>
+
+        <div class="rankings_container">
+            <div class="ranking_container" id="straight_flush">
+                <div class="com_cards">
+                    <div id="10,2" class="card card_front">
+                        <p>10</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="11,2" class="card card_front">
+                        <p>J</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="12,2" class="card card_front">
+                        <p>Q</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="13,2" class="card card_front">
+                        <p>K</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="14,2" class="card card_front">
+                        <p>A</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                </div>
+                <h4>1. Straight Flush</h4>
+                <p class="explanation">Five cards of sequential rank, all in the same suit.
+                </p>
+            </div>
+            <div class="ranking_container" id="four_of_a_kind">
+                <div class="com_cards">
+                    <div id="9,0" class="card card_front">
+                        <p>9</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                    <div id="9,1" class="card card_front card_red">
+                        <p>9</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="9,2" class="card card_front">
+                        <p>9</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="9,3" class="card card_front card_red">
+                        <p>9</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                    <div id="5,0" class="card card_front">
+                        <p>5</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                </div>
+                <h4>2. Four of a Kind</h4>
+                <p class="explanation">Four cards with the same rank.
+                </p>
+            </div>
+            <div class="ranking_container" id="full_house">
+                <div class="com_cards">
+                    <div id="13,0" class="card card_front">
+                        <p>K</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                    <div id="13,1" class="card card_front card_red">
+                        <p>K</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="13,3" class="card card_front card_red">
+                        <p>K</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                    <div id="14,1" class="card card_front card_red">
+                        <p>A</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="14,3" class="card card_front card_red">
+                        <p>A</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                </div>
+                <h4>3. Full House</h4>
+                <p class="explanation">Three cards of one rank and two cards of another rank.
+                </p>
+            </div>
+            <div class="ranking_container" id="flush">
+                <div class="com_cards">
+                    <div id="12,0" class="card card_front">
+                        <p>Q</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                    <div id="11,0" class="card card_front">
+                        <p>J</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                    <div id="10,0" class="card card_front">
+                        <p>10</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                    <div id="8,0" class="card card_front">
+                        <p>8</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                    <div id="7,0" class="card card_front">
+                        <p>7</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                </div>
+                <h4>4. Flush</h4>
+                <p class="explanation">Five non-sequential cards all of the same suit.
+                </p>
+            </div>
+            <div class="ranking_container" id="straight">
+                <div class="com_cards">
+                    <div id="4,0" class="card card_front">
+                        <p>4</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                    <div id="5,1" class="card card_front card_red">
+                        <p>5</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="6,2" class="card card_front">
+                        <p>6</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="7,3" class="card card_front card_red">
+                        <p>7</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                    <div id="8,1" class="card card_front card_red">
+                        <p>8</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                </div>
+                <h4>5. Straight</h4>
+                <p class="explanation">Five cards of sequential rank, not all in the same suit.
+                </p>
+            </div>
+            <div class="ranking_container" id="three_of_a_kind">
+                <div class="com_cards">
+                    <div id="6,0" class="card card_front">
+                        <p>6</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                    <div id="6,1" class="card card_front card_red">
+                        <p>6</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="6,3" class="card card_front card_red">
+                        <p>6</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                    <div id="12,1" class="card card_front card_red">
+                        <p>Q</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="11,3" class="card card_front card_red">
+                        <p>J</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                </div>
+                <h4>6. Three of a Kind</h4>
+                <p class="explanation">Three cards of one rank and two cards of different ranks.
+                </p>
+            </div>
+            <div class="ranking_container" id="two_pair">
+                <div class="com_cards">
+                    <div id="10,3" class="card card_front card_red">
+                        <p>10</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                    <div id="10,1" class="card card_front card_red">
+                        <p>10</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="3,2" class="card card_front">
+                        <p>3</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="3,3" class="card card_front card_red">
+                        <p>3</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                    <div id="12,3" class="card card_front card_red">
+                        <p>Q</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                </div>
+                <h4>7. Two Pair</h4>
+                <p class="explanation">Two rank pairs and one card of a third rank.
+                </p>
+            </div>
+            <div class="ranking_container" id="pair">
+                <div class="com_cards">
+                    <div id="7,2" class="card card_front">
+                        <p>7</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="7,1" class="card card_front card_red">
+                        <p>7</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="11,1" class="card card_front card_red">
+                        <p>J</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="5,2" class="card card_front">
+                        <p>5</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="4,3" class="card card_front card_red">
+                        <p>4</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                </div>
+                <h4>8. Pair</h4>
+                <p class="explanation">One rank pair and 3 cards of different ranks.
+                </p>
+            </div>
+            <div class="ranking_container" id="high_card">
+                <div class="com_cards">
+                    <div id="8,2" class="card card_front">
+                        <p>8</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="5,3" class="card card_front card_red">
+                        <p>5</p>
+                        <div>
+                            <p>♦</p>
+                        </div>
+                    </div>
+                    <div id="4,2" class="card card_front">
+                        <p>4</p>
+                        <div>
+                            <p>♠</p>
+                        </div>
+                    </div>
+                    <div id="3,1" class="card card_front card_red">
+                        <p>3</p>
+                        <div>
+                            <p>♥</p>
+                        </div>
+                    </div>
+                    <div id="2,0" class="card card_front">
+                        <p>2</p>
+                        <div>
+                            <p>♣</p>
+                        </div>
+                    </div>
+                </div>
+                <h4>9. High Card</h4>
+                <p class="explanation">Simply nothing...
+                </p>
+            </div>
+        </div>
+        <div class="section">
+            <h3>Order of Play</h3>
+            <p>After each hand, the dealer button moves one position clockwise, which shifts the small blind, big blind,
+                and
+                subsequent positions for the next hand. This rotation ensures that each player has an opportunity to act
+                as
+                the dealer. The community cards are dealt in stages, with each stage having its own betting round. The
+                stages are:
+            <ul>
+                <li><b>Pre-flop:</b> Each player receives two private hole cards.</li>
+                <li><b>Flop:</b> Three community cards are dealt face-up in the center of the table.</li>
+                <li><b>Turn:</b> A fourth community card is dealt face-up.</li>
+                <li><b>River:</b> The fifth and final community card is dealt face-up.</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h3>Betting Process</h3>
+            <p><b>Blinds:</b> The game starts with two players posting forced bets known as the "small blind" and the
+                "big
+                blind." The player to the left of the dealer posts the small blind, and the player to their left posts
+                the
+                big blind. The blinds are predetermined amounts, and they initiate the betting. Each player is then
+                dealt
+                two private cards, known as "hole cards" or "pocket cards."</p>
+            <p><b>Minimum Raise:</b> When a player chooses to raise, the minimum amount they can raise is typically
+                double
+                the
+                current bet or the big blind. For example, if the current bet or big blind is $10, the minimum raise
+                would
+                be $20.</p>
+            <p><b>Maximum Bet:</b> In no-limit Texas Hold'em, there is no maximum limit on the amount a player can bet
+                or
+                raise
+                during a betting round. A player can go all-in, betting all their remaining chips.</p>
+            <p><b>All-In:</b> If a player does not have enough chips to match a bet or raise, they can go all-in by
+                betting
+                their remaining chips. In this case, a separate side pot may be created for the remaining players who
+                can
+                continue betting.</p>
+            <p><b>First Betting Round (Pre-Flop):</b> Starting with the player to the left of the big blind, each player
+                has
+                the option to call (match the big blind), raise (increase the bet), or fold (discard their hand and
+                forfeit
+                the round). Betting continues clockwise. After the first betting round, the flop is dealt. </p>
+            <p><b>Second Betting Round (Post-Flop):</b> Starting with the player to the left of the dealer, a new
+                betting
+                round begins. Players can check (pass the action to the next player if no one has bet), bet, call,
+                raise, or
+                fold, depending on the previous actions. After the second betting round, the turn is dealt.</p>
+            <p><b>Third Betting Round (Post-Turn):</b> Another betting round occurs, starting with the player to the
+                left of
+                the dealer. The options are the same as in the previous rounds. Following the third betting round, the
+                river
+                is dealt.</p>
+            <p><b>Final Betting Round (Post-River):</b> The last betting round takes place, starting with the player to
+                the
+                left of the dealer. Players can make their final bets or folds. If there are two or more players
+                remaining
+                after the final betting round, a showdown occurs.</p>
+        </div>
+        <div class="section">
+            <h3>Showdown</h3>
+            <p><b>Showdown Obligation:</b> In a showdown, all players involved in the hand who don't wish to forfeit the
+                pot
+                are obligated to reveal their hole cards to determine the best hand. If there is only one player
+                remaining
+                after the final betting round, that player is not required to show their cards.</p>
+            <p><b>Order of Revealing Cards:</b> The player who made the last aggressive action (the last bet or raise)
+                is
+                the first to reveal their cards. If there was no bet on the final betting round, the player to the left
+                of
+                the dealer button is the first to show.</p>
+            <p><b>Mucking (Not Showing) Cards:</b> Players have the option to muck (not show) their cards if they have a
+                losing hand.</p>
+            <p><b>All-In:</b> If a player does not have enough chips to match a bet or raise, they can go all-in by
+                betting
+                their
+                remaining chips. In this case, a separate side pot may be created for the remaining players who can
+                continue
+                betting.</p>
+            <p><b>Side Pots:</b> In situations where one or more players are all-in with different chip stacks, multiple
+                side pots may be created. Each side pot is contested by the players involved in that particular pot. The
+                main pot is awarded to the player with the best hand among all players.</p>
+            <p><b>Split Pots:</b> If two or more players have the same winning hand, the pot is split equally among
+                them.
+                It's possible for a hand to be split between the main pot and one or more side pots.</p>
+        </div>
+        <div class="section">
+            <h3>Tips for Beginners</h3>
+            <ul id="tips">
+                <li>Start by playing low stakes games, familiarize yourself with the rules and gameplay.</li>
+                <li>Pay attention to your position at the table. Being in a later position allows you to see how others
+                    act before you make decisions.</li>
+                <li>Observe your opponents and adapt your strategy accordingly. Look for patterns in their playing
+                    styles.</li>
+                <li>Don't feel pressured to play every hand. Patience is a virtue in poker, and waiting for good
+                    opportunities can be more profitable.</li>
+                <li>Bluff sparingly and choose your spots wisely. Bluffing is more effective when done selectively.</li>
+                <li>Don't be afraid to fold a hand if it's not strong. Knowing when to cut your losses is a crucial
+                    skill in poker.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>

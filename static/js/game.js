@@ -183,7 +183,7 @@ socket.on('game_info', game => {
     const playerList = document.getElementById('player_list');
     const pot = document.getElementById('game_pot');
     const choiceContainer = document.getElementById('choice_container');
-    const comCards = document.getElementById('com_cards');
+    const comCards = document.querySelector('.com_cards');
     const bestHand = document.getElementById('best_hand');
     const thisPlayer = players.find(player => player.id == playerId);
     const thisPlayerIndex = players.findIndex(player => player.id == playerId);

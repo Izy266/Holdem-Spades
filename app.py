@@ -39,6 +39,10 @@ def index():
 def create_lobby():
     return render_template('create_lobby.html')
 
+@app.route('/rules')
+def rules():
+    return render_template('rules.html')
+
 @app.route('/join/<game_id>')
 def join(game_id):
     return render_template('player.html', game_id=game_id)

@@ -3,6 +3,7 @@ body {
     flex-direction: column;
     font-family: "Inter Tight";
     height: 100vh;
+    overflow-x: hidden;
     margin: 0;
     padding: 0;
     background-color: rgb(244, 244, 244);
@@ -35,7 +36,8 @@ h4 {
     font-weight: 700;
 }
 
-p, li {
+p,
+li {
     color: rgb(90, 75, 87);
 }
 
@@ -78,6 +80,7 @@ button p {
 }
 
 .header a {
+    font-family: "Inter Tight";
     display: flex;
     height: 100%;
     width: 100%;
@@ -129,10 +132,28 @@ button p {
     gap: 1vw;
 }
 
+.dropdown {
+    display: none;
+    position: relative;
+    justify-self: start;
+    align-self: start;
+    height: 100%;
+    width: 45px;
+}
+
+.dropdown:focus-within>.menu_button_choices {
+    display: inline-block;
+}
+
+.dropdown:focus .menu_button_choices {
+    display: none;
+}
+
 .menu_button {
     display: none;
     height: 100%;
     width: 45px;
+    margin-left: auto;
 
     background-image: url("../img/menu_dark.png");
     background-color: transparent;
@@ -144,7 +165,50 @@ button p {
 }
 
 .menu_button:hover {
+    background-color: rgb(0, 0, 0, 0.05);
+    cursor: pointer; 
+}
+
+.menu_button:active,
+.menu_button:focus {
     background-color: rgb(0, 0, 0, 0.1);
+    pointer-events: none; 
+}
+
+.menu_button_choices {
+    display: none;
+    min-width: 160px;
+    position: relative;
+    left: -115px;
+    margin-right: 0;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 4px 4px;
+}
+
+.menu_choice {
+    font-weight: 300;
+    font-size: 16px;
+    padding: 0.6rem 0;
+    background-color: rgb(229, 229, 229);
+    border: none;
+}
+
+.menu_choice:hover {
+    background-color: rgb(249, 249, 249);
+    cursor: pointer; 
+    text-decoration: none;
+}
+
+.game .menu_button:active,
+.game .menu_button:focus {
+    background-color: rgb(34, 110, 70);
+}
+
+.game .menu_choice {
+    background-color: rgb(34, 110, 70);
+}
+
+.game .menu_choice:hover {
+    background-color: rgb(54, 130, 90);
 }
 
 .common_button {
@@ -927,7 +991,8 @@ button p {
     margin: 10px 10vw;
 }
 
-.section p, .section li {
+.section p,
+.section li {
     text-align: justify;
     text-justify: inter-word;
 }
@@ -1006,6 +1071,10 @@ button p {
 
     .menu_items {
         display: none;
+    }
+
+    .dropdown {
+        display: block;
     }
 
     .menu_button {

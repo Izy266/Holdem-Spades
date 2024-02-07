@@ -192,7 +192,6 @@ socket.on('game_info', game => {
     const turnPlayer = players.find(player => player.current);
     const playerListIds = Array.from(playerList.children).map(child => child.id);
     const playerIds = players.map(player => player.id);
-    const gameLogBox = document.getElementById('game_log_box');
 
     choiceContainer.innerHTML = '';
     gameButtonContainer.innerHTML = '';
@@ -231,16 +230,24 @@ socket.on('game_info', game => {
             infoContainer = makePlayer(player, player.id == playerId);
             playerList.appendChild(infoContainer);
         }
-        
-        let rotations = midPoint - thisPlayerIndex < 0 ? midPoint + (players.length - thisPlayerIndex): midPoint - thisPlayerIndex;
+
+        let rotations = midPoint - thisPlayerIndex < 0 ? midPoint + (players.length - thisPlayerIndex) : midPoint - thisPlayerIndex;
         let newInd = (index + rotations) % players.length;
         let playerColumn = newInd + (4 - midPoint);
         infoContainer.style.gridColumn = `${playerColumn}`;
 
         const playerInfoContainer = infoContainer.querySelector('.player_info_container');
         const playerInfo = infoContainer.querySelector('.player_info');
+        const playerName = infoContainer.querySelector('.player_name');
+        playerInfo.style.width = `clamp(90px, ${(60 / players.length).toFixed(2)}vw, 150px)`;
+        playerName.style.fontSize = `clamp(16px, ${(8.4 / players.length).toFixed(2)}vw, 20px)`;
+
         if (index == thisPlayerIndex) {
-            playerInfo.classList.add('self');
+            playerInfo.style.padding = `clamp(15px, ${(10.5 / players.length).toFixed(2)}vw, 28px)`;
+            playerInfo.style.gap = `clamp(8px, ${(8.5 / players.length).toFixed(2)}vw, 25px)`;
+        } else {
+            playerInfo.style.padding = `clamp(14px, ${(8.5 / players.length).toFixed(2)}vw, 23px) clamp(11.5px, ${(7 / players.length).toFixed(2)}vw, 19px)`;
+            playerInfo.style.gap = `clamp(5px, ${(5 / players.length).toFixed(2)}vw, 15px)`;
         }
 
         if (game.live) {
@@ -262,6 +269,13 @@ socket.on('game_info', game => {
                         delay += 300;
                         hand.appendChild(makeCardFlip(card, delay));
                     }
+
+                    let cards = hand.querySelectorAll('.card');
+                    cards.forEach(card => {
+                        card.style.height = `clamp(69px, ${(42 / players.length).toFixed(2)}vw, 110px)`;
+                        card.style.width = `clamp(48px, ${(30 / players.length).toFixed(2)}vw, 77px)`;
+                        card.style.fontSize = `clamp(24px, ${(15 / players.length).toFixed(2)}vw, 38px)`;
+                    });
                 });
             }
 

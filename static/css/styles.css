@@ -1,9 +1,13 @@
+html {
+    overflow-x: hidden;
+}
+
 body {
     display: flex;
     flex-direction: column;
     font-family: "Inter Tight";
     height: 100vh;
-    overflow-x: hidden;
+    width: 100vw;
     margin: 0;
     padding: 0;
     background-color: rgb(244, 244, 244);
@@ -146,7 +150,7 @@ button p {
 }
 
 .dropdown:focus .menu_button_choices {
-    display: none;
+    display: block;
 }
 
 .menu_button {
@@ -444,7 +448,7 @@ button p {
     justify-items: center;
     align-items: end;
     grid-auto-columns: repeat(7, 1fr);
-    width: 100%;
+    width: 100vw;
     overflow-x: scroll;
 }
 
@@ -471,16 +475,10 @@ button p {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    width: 8vw;
-    min-width: 90px;
-    padding: clamp(14px, 1.2vw, 1.2vw) clamp(11.5px, 1vw, 1vw);
+    width: clamp(90px, 30vw, 150px);
+    padding: clamp(14px, 1.2vw, 23px) clamp(11.5px, 1vw, 19px);
     border-radius: 5px;
     gap: clamp(5px, 0.7vw, 15px);
-}
-
-.player_info.self {
-    gap: clamp(8px, 1.2vw, 25px);
-    padding: clamp(15px, 1.3vw, 1.3vw);
 }
 
 .player_name {
@@ -529,13 +527,13 @@ button p {
 .card {
     height: clamp(69px, 5.7vw, 110px);
     width: clamp(48px, 4vw, 77px);
+    font-size: clamp(24px, 2vw, 38px);
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     border-radius: 5px;
 }
 
 .card_front p {
     font-family: "Oswald";
-    font-size: clamp(24px, 2vw, 38px);
     color: black;
     margin: 34% 17%;
 }
@@ -1045,8 +1043,12 @@ button p {
 
 
 @media (max-width: 600px) {
-    h1 {
+    .home_page h1 {
         font-size: 36px;
+    }
+
+    .home_page p {
+        font-size: 16px;
     }
 
     .title {
@@ -1061,9 +1063,6 @@ button p {
         margin-bottom: 20px;
     }
 
-    p {
-        font-size: 16px;
-    }
 
     .menu {
         margin: 0;

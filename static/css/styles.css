@@ -186,6 +186,7 @@ button p {
     left: -115px;
     margin-right: 0;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 4px 4px;
+    z-index: 1;
 }
 
 .menu_choice {

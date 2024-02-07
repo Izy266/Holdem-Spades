@@ -1,5 +1,6 @@
 import random
 from collections import defaultdict
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class Player:
     def __init__(self, name, id, balance):
@@ -17,8 +18,8 @@ class Player:
         self.afk = 0
         
 class TexasHoldem:
-    def __init__(self, game_id, creator_id, buy_in, small_blind, big_blind):
-        self.id, self.creator_id = game_id, creator_id
+    def __init__(self, game_id, creator_id, buy_in, small_blind, big_blind, password):
+        self.id, self.creator_id, self.password = game_id, creator_id, password
         self.buy_in, self.small_blind, self.big_blind = buy_in, small_blind, big_blind
         self.deck, self.community_cards, self.players = [], [], []
         self.pot, self.button, self.round, self.turn, self.turn_start = 0, 0, 0, 0, 0

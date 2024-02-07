@@ -12,7 +12,8 @@
 
     <script src="../static/js/player.js"></script>
     <link rel="stylesheet" href="../static/css/styles.css">
-    <title>Create Lobby</title>
+    <link rel="icon" href="../static/img/logo_spade_light.svg">
+    <title>Join Game</title>
 </head>
 
 <body class="create_lobby">
@@ -20,8 +21,8 @@
         <div class="logo">
             <a href="/">
                 <img src="../static/img/logo_dark.svg" alt="Holdem Haven Logo" id="logo_img">
+                <div class="title">Holdem Spades</div>
             </a>
-            <div class="title">Holdem Spades</div>
         </div>
         <div class="menu">
             <div class="menu_items">
@@ -39,14 +40,18 @@
         </div>
 
         <form action="/add_player/{{ game_id }}" method="post" id="lobby_form">
-            <div class="detail_field">
+            <div class="detail_field" id="player_name_field">
                 <label for="player_name">Player Name</label>
-                <input type="text" id="player_name" name="player_name">
+                <input type="text" id="player_name" name="player_name" value="{{ name }}">
+                <div class="error {% if errors[0] %}found{% endif %}">{{ errors[0] }}</div>
             </div>
-            <div class="detail_field">
+            {% if pass_exists %}
+            <div class="detail_field" id="lobby_pass_field">
                 <label for="lobby_pass">Lobby Password (Optional)</label>
-                <input type="password" id="lobby_pass" name="lobby_pass">
+                <input type="password" id="lobby_pass" name="lobby_pass" value="{{ password }}">
+                <div class="error {% if errors[1] %}found{% endif %}">{{ errors[1] }}</div>
             </div>
+            {% endif %}
             <button type="submit" class="common_button blue_button" id="join_game_button">Join Game</button>
         </form>
 

@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for
 from flask_socketio import SocketIO, join_room
+from werkzeug.security import generate_password_hash, check_password_hash
 from holdem import *
 import secrets, uuid, json, time, threading, bleach
 
@@ -44,21 +45,50 @@ def rules():
     return render_template('rules.html')
 
 @app.route('/join/<game_id>')
-def join(game_id):
-    return render_template('player.html', game_id=game_id)
+def join(game_id, pass_exists=True, errors=['',''], name='', password = ''):
+    game_id = clean(str(game_id))
+    player_id = request.cookies.get('player_id')
+    session_id = request.cookies.get('session_id')
+    game = games[game_id]
+    player_sessions = {p.id: p.session_id for p in game.players}
+
+    if player_id and player_id in player_sessions and player_sessions[player_id] == session_id:
+        return play(game_id)
+    
+    return render_template('join.html', game_id=game_id, pass_exists=pass_exists, errors=errors, name=name, password=password)
 
 @app.route('/play/<game_id>')
 def play(game_id):
+    game_id = clean(str(game_id))
+    if game_id not in games:
+        return "Game not found"
+    
+    player_id = request.cookies.get('player_id')
+    session_id = request.cookies.get('session_id')
+    game = games[game_id]
+    player_sessions = {p.id: p.session_id for p in game.players}
+
+    if not player_id or player_id not in player_sessions or player_sessions[player_id] != session_id:
+        return join(game_id, bool(game.password))
+
     return render_template('game.html')
 
 @app.route('/create_game', methods=['POST'])
 def create_game():
+    player_name = clean(str(request.form['player_name']))
+    buy_in = 0 if not request.form['buy_in'] else int(request.form['buy_in'])
+    small_blind = 0 if not request.form['small_blind'] else int(request.form['small_blind'])
+    big_blind = 0 if not request.form['big_blind'] else int(request.form['big_blind'])
+    password = clean(str(request.form['lobby_pass']))
+
+    if len(player_name) > 20 or len(password) > 128 or buy_in < 1 or small_blind > big_blind or big_blind > buy_in:
+        return create_lobby()
+
     game_id = str(uuid.uuid4())
     player_id = secrets.token_hex(16)
-    game = TexasHoldem(game_id, player_id, int(request.form['buy_in']), int(request.form['small_blind']), int(request.form['big_blind']))
-    player_name = clean(str(request.form['player_name']))
+    password = generate_password_hash(password) if password else ''
+    game = TexasHoldem(game_id, player_id, buy_in, small_blind, big_blind, password)
     games[game_id] = game
-    
     session_id = secrets.token_hex(16)
     player = Player(player_name, player_id, game.buy_in)
     player.session_id = session_id
@@ -73,10 +103,15 @@ def create_game():
 
 @app.route('/add_player/<game_id>', methods=['POST'])
 def add_player(game_id):
-    player_id = request.cookies.get('player_id')
+    game_id = clean(str(game_id))
     game = games[game_id]
-
     player_name = clean(str(request.form['player_name']))
+    password = clean(str(request.form['lobby_pass'])) if 'lobby_pass' in request.form else ''
+    pass_match = game.password == password == '' or check_password_hash(game.password, password)
+    errors = ['Name length can not exceed 20 characters.' if len(player_name) > 20 else '', 'Incorrect password.' if not pass_match else '']
+    if len(player_name) > 20 or not pass_match:
+        return join(game_id, bool(game.password), errors, player_name, password)
+
     player_id = secrets.token_hex(16)
     session_id = secrets.token_hex(16)
     player = Player(player_name, player_id, game.buy_in)

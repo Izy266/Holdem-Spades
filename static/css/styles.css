@@ -86,12 +86,18 @@ button p {
 }
 
 .logo {
-    display: flex;
     height: 100%;
     width: 200px;
-    gap: 15px;
-    align-items: center;
     margin: 20px;
+}
+
+.logo a {
+    display: flex;
+    gap: 15px;
+}
+
+.logo a:hover {
+    text-decoration: none;
 }
 
 .title {
@@ -199,6 +205,15 @@ button p {
 
 #logo_img {
     height: 50%;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+}
+
+.error.found {
+    margin-bottom: 1rem;
 }
 
 .main {
@@ -405,11 +420,16 @@ button p {
 }
 
 .player_name {
+    text-align: center;
     font-size: clamp(16px, 1.2vw, 20px);
     font-weight: 600;
     line-height: 1rem;
     color: rgb(14, 48, 53);
     padding-bottom: 5px;
+    width: 120%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .game .value_container {

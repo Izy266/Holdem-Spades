@@ -12,6 +12,7 @@
 
     <script src="../static/js/createLobby.js"></script>
     <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="icon" href="../static/img/logo_spade_light.svg">
     <title>Create Lobby</title>
 </head>
 
@@ -20,8 +21,8 @@
         <div class="logo">
             <a href="/">
                 <img src="../static/img/logo_dark.svg" alt="Holdem Haven Logo" id="logo_img">
+                <div class="title">Holdem Spades</div>
             </a>
-            <div class="title">Holdem Spades</div>
         </div>
         <div class="menu">
             <div class="menu_items">
@@ -40,31 +41,36 @@
         </div>
 
         <form action="/create_game" method="post" id="lobby_form">
-            <div class="detail_field">
+            <div class="detail_field" id="player_name_field">
                 <label for="player_name">Player Name</label>
                 <input type="text" id="player_name" name="player_name">
+                <div class="error"></div>
             </div>
-            <div class="detail_field">
+            <div class="detail_field" id="lobby_pass_field">
                 <label for="lobby_pass">Lobby Password (Optional)</label>
                 <input type="password" id="lobby_pass" name="lobby_pass">
+                <div class="error"></div>
             </div>
             <div class="detail_field" id="buy_in_field">
                 <label for="buy_in">Buy-in</label>
                 <input type="number"
                     onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13 || event.charCode == 46) ? null : event.charCode >= 48 && event.charCode <= 57"
-                    id="buy_in" name="buy_in" min="0" step="1">
+                    id="buy_in" name="buy_in" min="1" step="1">
+                <div class="error"></div>
             </div>
             <div class="detail_field" id="small_blind_field">
                 <label for="small_blind">Small Blind</label>
                 <input type="number"
                     onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13 || event.charCode == 46) ? null : event.charCode >= 48 && event.charCode <= 57"
                     id="small_blind" name="small_blind" min="0" step="1">
+                <div class="error"></div>
             </div>
             <div class="detail_field" id="big_blind_field">
                 <label for="big_blind">Big Blind</label>
                 <input type="number"
                     onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13 || event.charCode == 46) ? null : event.charCode >= 48 && event.charCode <= 57"
                     id="big_blind" name="big_blind" min="0" step="1">
+                <div class="error"></div>
             </div>
             <button type="submit" class="common_button blue_button" id="create_lobby_button">Create Lobby</button>
         </form>

@@ -231,10 +231,10 @@ socket.on('game_info', game => {
             infoContainer = makePlayer(player, player.id == playerId);
             playerList.appendChild(infoContainer);
         }
-
-        let indDiff = index - thisPlayerIndex;
-        let offset = Math.abs(indDiff) > midPoint ? ((index > midPoint) ? index - players.length : index + 1) : indDiff;
-        let playerColumn = 4 + offset
+        
+        let rotations = midPoint - thisPlayerIndex < 0 ? midPoint + (players.length - thisPlayerIndex): midPoint - thisPlayerIndex;
+        let newInd = (index + rotations) % players.length;
+        let playerColumn = newInd + (4 - midPoint);
         infoContainer.style.gridColumn = `${playerColumn}`;
 
         const playerInfoContainer = infoContainer.querySelector('.player_info_container');

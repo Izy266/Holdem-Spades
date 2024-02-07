@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         buttonContent.setAttribute('class', 'button_content')
         buttonTitle.setAttribute('class', 'button_title');
 
-
         buttonTitle.innerText = option.title;
         buttonContent.appendChild(buttonTitle);
 

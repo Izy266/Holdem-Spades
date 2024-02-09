@@ -27,7 +27,7 @@ class TexasHoldem:
         self.round, self.hand = -1, -1
         self.live = False
         self.last_better_id = None
-        self.timer_thread, self.time_per_move, self.move_time_start, self.move_time_remaining = None, 15000, 0, 0
+        self.timer_thread, self.time_per_move, self.move_time_start, self.move_time_remaining = None, 3, 0, 0
         self.chat, self.log = [], []
     
     def add_player(self, player):

@@ -223,7 +223,9 @@ socket.on('game_info', game => {
         });
     }
 
+    console.log(' ');
     players.forEach((player, index) => {
+        console.log(`${player.name}: ${player.afk} afks`);
         let infoContainer = document.getElementById(player.id);
 
         if (infoContainer == null) {
@@ -588,7 +590,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         gameLogBox.scrollTop = gameLogBox.scrollHeight;
     });
-
-
-
 });

@@ -165,15 +165,16 @@ def handle_player_action(data):
             set_timer(game)
             this_player.next_move = None
             if action == 'check':
+                this_player.afk = 0
                 game.check()
-                socketio.emit('log', {'lines': game.log[log_len:]}, room=game.id)
             elif action == 'bet':
+                this_player.afk = 0
                 amount = data.get('amount')
                 game.bet(int(amount))
-                socketio.emit('log', {'lines': game.log[log_len:]}, room=game.id)
             elif action in ['fold', 'afk_fold']:
+                this_player.afk = 0 if action == 'fold' else this_player.afk
                 game.fold()
-                socketio.emit('log', {'lines': game.log[log_len:]}, room=game.id)
+            socketio.emit('log', {'lines': game.log[log_len:]}, room=game.id)
         elif action in ['check', 'fold']:
             this_player.next_move = None if this_player.next_move == action else action
     elif action == 'new_hand':
@@ -181,6 +182,8 @@ def handle_player_action(data):
             game.new_hand()
             socketio.emit('log', {'lines': game.log[log_len:]}, room=game.id)
             set_timer(game)
+        else:
+            return
     elif action == 'leave':
         game.log.append(('leave', this_player.name))
         socketio.emit('log', {'lines': game.log[log_len:]}, room=game.id)

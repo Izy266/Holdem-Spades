@@ -449,12 +449,13 @@ button p {
     align-items: end;
     grid-auto-columns: repeat(7, 1fr);
     width: 100vw;
-    overflow-x: scroll;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .player_info_container {
     margin-top: 20px;
-    padding: 7px;
+    padding: 7px; 
     padding-top: 0;
     border-radius: 5px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
@@ -636,7 +637,7 @@ button p {
     grid-row: 1;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto 2rem 1rem;
+    grid-template-rows: auto 2rem 1.5rem;
     justify-content: center;
     align-items: center;
     gap: 1.5vh;

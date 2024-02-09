@@ -54,7 +54,7 @@
             </div>
             {% if pass_exists %}
             <div class="detail_field" id="lobby_pass_field">
-                <label for="lobby_pass">Lobby Password (Optional)</label>
+                <label for="lobby_pass">Lobby Password</label>
                 <input type="password" id="lobby_pass" name="lobby_pass" value="{{ password }}">
                 <div class="error {% if errors[1] %}found{% endif %}">{{ errors[1] }}</div>
             </div>

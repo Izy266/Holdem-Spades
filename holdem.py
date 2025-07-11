@@ -279,7 +279,7 @@ class TexasHoldem:
                         player.best_hand = [(suit_ranks_set[i] - r, suit) for r in range(5)]
                         player.score = [8, suit_ranks_set[i]]
                         return player.score
-                    if all(val in all_ranks_set for val in [14, 2, 3, 4, 5]):
+                    if all(val in suit_ranks_set for val in [14, 2, 3, 4, 5]):
                         player.best_hand = [(14, suit)] + [(2 + r, suit) for r in range(4)]
                         player.score = [8, 5]
                         return player.score

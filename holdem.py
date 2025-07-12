@@ -316,10 +316,11 @@ class TexasHoldem:
                 player.best_hand = [all_cards[all_ranks.index(rank)] for rank in range(all_ranks_set[i]-4, all_ranks_set[i] + 1)]
                 player.score = [4, all_ranks_set[i]]
                 return player.score
-            if all(val in all_ranks_set for val in [14, 2, 3, 4, 5]):
-                player.best_hand = [all_cards[all_ranks.index(rank)] for rank in [14, 2, 3, 4, 5]]
-                player.score = [4, 5]
-                return player.score
+                
+        if all(val in all_ranks_set for val in [14, 2, 3, 4, 5]):
+            player.best_hand = [all_cards[all_ranks.index(rank)] for rank in [14, 2, 3, 4, 5]]
+            player.score = [4, 5]
+            return player.score
                 
         if player.score[0] == 3:
             return player.score

@@ -290,7 +290,7 @@ class TexasHoldem:
         for rank in all_ranks_set:
             if all_ranks.count(rank) == 4:
                 player.best_hand = [(rank, s) for s in range(4)] + [card for card in all_cards_sorted if card[0] != rank][:1]
-                player.score = [7, rank]
+                player.score = [7, rank] + [card[0] for card in all_cards_sorted if card[0] != rank][:1]
                 return player.score
         
         # Check full house and three of a kind
